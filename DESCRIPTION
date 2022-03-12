@@ -2,9 +2,11 @@ Package: regulationsgov
 Title: Accessing Regulations.gov Data
 Version: 0.0.0.9000
 Authors@R: 
-    person("Quinn", "White", , "qwhite@smith.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: This package facilitates accessing data through the regulations.gov API
+    person("Quinn", "White",,
+    "qwhite@smith.edu",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "https://orcid.org/0000-0001-5399-0237"))
+Description: This package facilitates accessing data through the Regulations.gov API.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
