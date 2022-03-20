@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/q-w-a/regulationsgov/workflows/R-CMD-check/badge.svg)](https://github.com/q-w-a/regulationsgov/actions)
 <!-- badges: end -->
 
 The package regulationsgov is to enable users to access and engage with
@@ -26,7 +27,7 @@ devtools::install_github("q-w-a/regulationsgov")
 To access the [Regulations.gov
 API](https://open.gsa.gov/api/regulationsgov/), you will need to obtain
 an API key from [data.gov](https://data.gov/), which you can do
-[here](https://api.data.gov/signup/).
+[here](https://open.gsa.gov/api/regulationsgov/#getting-started).
 
 Once you have this key, you can provide it to every time you call one of
 the functions requiring authentication using the `key` argument, but it

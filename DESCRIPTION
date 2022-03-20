@@ -7,10 +7,19 @@ Authors@R:
     role = c("aut", "cre"),
     comment = c(ORCID = "https://orcid.org/0000-0001-5399-0237"))
 Description: This package facilitates accessing data through the Regulations.gov API.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 URL: https://github.com/q-w-a/regulationsgov
 BugReports: https://github.com/q-w-a/regulationsgov/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    jsonlite,
+    dplyr,
+    magrittr,
+    purrr,
+    httr,
+    rlang

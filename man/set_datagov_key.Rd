@@ -7,7 +7,7 @@
 set_datagov_key(key)
 }
 \arguments{
-\item{key}{valid Data.gov API key obtained \href{https://api.data.gov/signup/}{here}}
+\item{key}{valid Data.gov API key obtained \href{https://open.gsa.gov/api/regulationsgov/#getting-started}{here}.}
 }
 \description{
 This function provides a way to store the Data.gov API key as an
