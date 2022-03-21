@@ -5,6 +5,10 @@ skip_if_no_key <- function() {
   }
 }
 
+test_that(" are tests running" , {
+  expect_equal("no", "yes")
+})
+
 
 
 test_that("construct_document_url function produces valid URL", {
