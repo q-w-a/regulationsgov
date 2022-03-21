@@ -13,8 +13,7 @@ test_that("construct_document_url function produces valid URL", {
   # check that it works with a single docket ID
   url <- construct_document_url(docketId = "CMS-2014-0063",
                                 key = "DEMO_KEY")
-  expect_equal(url, "https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&page[number]=1&page[size]=250&api_key=DEMO_KEY",
-               key = "DEMO_KEY")
+  expect_equal(url, "https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&page[number]=1&page[size]=250&api_key=DEMO_KEY")
   #  resp <- httr::GET(url, config = config(ssl_verifypeer=FALSE))
   #  expect_equal(resp$status_code, 200)
 

@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/q-w-a/regulationsgov/workflows/R-CMD-check/badge.svg)](https://github.com/q-w-a/regulationsgov/actions)
 <!-- badges: end -->
 
-The package regulationsgov is to enable users to access and engage with textual data from the [Regulations.gov API](https://open.gsa.gov/api/regulationsgov/). 
+The package regulationsgov is designed to enable users to access and engage with textual data from the [Regulations.gov API](https://open.gsa.gov/api/regulationsgov/). 
 
 ## Installation
 
