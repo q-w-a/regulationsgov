@@ -12,7 +12,8 @@ get_data_by_page(url, page_number = 1)
 \item{page_number}{page number to obtain data for, default value is 1}
 }
 \description{
-Acquire Data for the Given Page and Url
+Get data for the given page number. Used for iterating over pages when
+this is necessary to obtain all the data.
 }
 \examples{
 \dontrun{

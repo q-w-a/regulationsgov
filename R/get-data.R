@@ -22,6 +22,12 @@ get_data <- function(url, df = FALSE) {
       message()
     stop("API failed to return json", call. = FALSE)
   }
+  else if (httr::http_error(resp)) {
+    error_message <- httr::http_status(resp) %>%
+      paste(collapse = "\n")
+    stop(error_message,
+      call. = FALSE)
+  }
 
   parsed <- jsonlite::fromJSON(
     httr::content(resp, "text"),
@@ -29,6 +35,9 @@ get_data <- function(url, df = FALSE) {
 
   if (df) {
     tryCatch( {
+      if (!is.null(names(parsed$data))) {
+        parsed <- get_df(parsed$data)
+      }
       parsed <- map(parsed$data, get_df) %>%
         reduce(bind_rows) },
       error = function(cnd) {
@@ -40,6 +49,9 @@ get_data <- function(url, df = FALSE) {
 }
 
 #' Acquire Data for the Given Page and Url
+#'
+#' Get data for the given page number. Used for iterating over pages when
+#' this is necessary to obtain all the data.
 #'
 #' @param url a url containing an API call
 #' @param page_number page number to obtain data for, default value is 1
@@ -59,6 +71,62 @@ get_data_by_page <- function(url, page_number = 1) {
 }
 
 
+
+#' Get All the Elements When Iteration Over Pages May Be Necessary
+#'
+#' Get all elements corresponding to a given url, since the API allows
+#' at most 20 pages, \code{page[number]} parameter of the url, each of
+#' which can contain at most 250 elements, the \code{page[size]} parameter.
+#' If there are less than 250 elements, then no iteration is needed because
+#' all elements are on the first page. Otherwise, multiple API calls will
+#' be needed to obtain all the results.
+#'
+#' @param url a valid API url that includes the \code{page[size]} and \code{page[number]}
+#' parameters.
+#' @return a nested list containing all elements corresponding to the given url.
+#' Functionality is not yet implemented for obtaining all elements when there are
+#' more than 5000 elements.
+#' @examples
+#' \dontrun{iterate_over_pages("https://api.regulations.gov/v4/comments?filter
+#' [commentOnId]=09000064816e1a41&page[size]=250&page[number]=1&
+#' sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
+#' }
+iterate_over_pages <- function(url) {
+  first <- get_data_by_page(url, page_number = 1)
+
+  if (is.null(first$meta$totalElements)) {
+    message("no pages")
+    pages <- first
+  }
+
+  else if (first$meta$totalElements <= 250) {
+    #message("Number of elements is only ", first$meta$totalElements)
+    # all elements will be on the first page
+    pages <- first
+  }
+
+  else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000 ) {
+   # message("Number of elements is  ", first$meta$totalElements, " so iterating over pages")
+
+    # since we can have 250 elements on each page, set number of pages to get all elements
+    end <- floor(first$meta$totalElements /250) + 1
+    # print(end)
+    pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url))
+  }
+  else{
+    message("not yet implemented; call will take over an hour due to API rate limit")
+    pages <- first
+  }
+  return(pages)
+}
+
+
+
+
+
+
+
+
 #' Convert Element of Nested List from jsonlite::fromJSON into Data Frame
 #'
 #' Can be used iteratively in conjunction with \code{bind_rows} to convert the
@@ -66,9 +134,20 @@ get_data_by_page <- function(url, page_number = 1) {
 #' @param element a named nested list
 #' @return the element converted to a data frame
 get_df <- function(element) {
+
+  if (!is.null(element$attributes$fileFormats)) {
+    fileFormats <- unlist(element$attributes$fileFormats)
+    fileFormats <- fileFormats[grepl("http", fileFormats)] %>%
+    paste0(collapse = ",") %>%
+    gsub('"', "", .)
+    element$attributes$fileFormats <- fileFormats
+
+    }
+
   element %>%
     unlist() %>%
     t() %>%
     as.data.frame() %>%
+    # remove attributes part of column names
     dplyr::rename_with(~gsub("attributes.", "", .x, fixed = TRUE))
 }

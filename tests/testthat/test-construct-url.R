@@ -1,10 +1,4 @@
 
-skip_if_no_key <- function() {
-  if (identical(Sys.getenv("DATA_GOV_KEY"), "")) {
-    skip("No authentication available; skipping the test")
-  }
-}
-
 
 test_that("construct_document_url function produces valid URL", {
   # skip_if_no_key()
@@ -77,6 +71,25 @@ test_that("testing withinCommentPeriod argument of construct_document_url", {
 
 })
 
+test_that("include attachments works for construct_document_url", {
+  url <- construct_document_url(documentId = "CMS-2014-0063-0001",
+                                attachments = "true",
+                                key = "DEMO_KEY")
+  expect_equal(url,
+               "https://api.regulations.gov/v4/documents/CMS-2014-0063-0001?include=attachments&api_key=DEMO_KEY")
+})
 
 
+test_that("collapsing multiple arguments works for construct_document_url", {
+  url <- construct_document_url(searchTerm = c("water", "soil"),
+                                documentType = c("Supporting & Related Material", "Notice"),
+                                key = "DEMO_KEY")
+  expect_equal(url,
+               "https://api.regulations.gov/v4/documents?filter[documentType]=Supporting%20%26%20Related%20Material,Notice&filter[searchTerm]=water,soil&page[number]=1&page[size]=250&api_key=DEMO_KEY")
 
+  url <- construct_document_url(agencyId = c("CMS", "EPA"),
+                                postedDate = c("2020-02-02", "2020-10-02"),
+                                key = "DEMO_KEY")
+  expect_equal(url,
+  "https://api.regulations.gov/v4/documents?filter[agencyId]=CMS,EPA&filter[postedDate][ge]=2020-02-02&filter[postedDate][le]=2020-10-02&page[number]=1&page[size]=250&api_key=DEMO_KEY")
+})
