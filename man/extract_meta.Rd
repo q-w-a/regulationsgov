@@ -7,8 +7,10 @@
 extract_meta(link, key = NULL)
 }
 \arguments{
-\item{link}{a link of the form https://api.regulations.gov/v4/comments/ID_HERE for
-the comment or document ID for which detailed data will be obtained.}
+\item{link}{a link of the form https://api.regulations.gov/v4/comments/COMMENT_ID_HERE for
+the comment endpoint or a link of the form https://api.regulations.gov/v4/comments/DOCUMENT_ID_HERE
+for the document endpoint. Detailed information will be obtained on the document or comment of the
+given ID.}
 
 \item{key}{the API key passed in the function call; this may be NULL if the user has
 chosen to set up the key as an environmental variable instead with the function
@@ -24,9 +26,9 @@ Extract Metadata for Specific Documents or Comments
 \examples{
 \dontrun{
 # get comment metadata for a specific comment
-extract_meta("https://api.regulations.gov/v4/comments/COMMENT_ID_HERE")
+result_comment <- extract_meta("https://api.regulations.gov/v4/comments/NOAA-NMFS-2013-0095-0007")
 # get comment metadata for a specific document
-extract_meta("https://api.regulations.gov/v4/documents/DOCUMENT_ID_HERE")
+result_doc <- extract_meta("https://api.regulations.gov/v4/documents/NIH-2006-0048-0001")
 }
 }
 \keyword{internal}

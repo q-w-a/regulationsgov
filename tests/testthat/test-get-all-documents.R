@@ -9,7 +9,6 @@ test_that("get_all_documents has expected output with documentId argument", {
                                              "CMS-2018-0104-0001"))
   expect_equal(nrow(result), 4)
 
-  result <- get_all_documents(docketId ="FDA-2009-N-0501")
 
 
 })

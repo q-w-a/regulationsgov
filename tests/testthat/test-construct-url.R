@@ -1,7 +1,6 @@
 
 
 test_that("construct_document_url function produces valid URL", {
-  # skip_if_no_key()
 
   # check that it works with a single docket ID
   url <- construct_document_url(docketId = "CMS-2014-0063",

@@ -26,18 +26,24 @@
 get_all_comments <- function(docketId = NULL, documentId = NULL, test = FALSE, key = NULL) {
   key <- check_auth(key)
   url <- ifelse(!is.null(documentId),
-                construct_document_url(documentId = documentId),
-                construct_document_url(docketId = docketId))
- # print(url)
+                construct_document_url(documentId = documentId,
+                                       key = key),
+                construct_document_url(docketId = docketId,
+                                       key = key))
+
   docs <- iterate_over_pages(url)
-  objids <- map(docs, ~find_element(.x, "objectId"))
-  # print(objids)
+
+ # objids <- docs$data$attributes.objectId
+  objids <- find_element(docs, "objectId")
+  #  objids <- map(docs, ~find_element(.x, "objectId"))
+
+
   # extract all comments for each document; each link corresponds to one document
   comments_per_doc_links <- paste0("https://api.regulations.gov/v4/comments?filter[commentOnId]=",
                                    unlist(objids),
                                    "&page[size]=250&page[number]=1&sort=lastModifiedDate,documentId&api_key=",
                                    key)
-#  print(comments_per_doc_links)
+
   res <- map(comments_per_doc_links, iterate_over_pages)
   res <- unlist(res, recursive = TRUE, use.names = FALSE)
 

@@ -31,19 +31,21 @@ get_data <- function(url, df = FALSE) {
 
   parsed <- jsonlite::fromJSON(
     httr::content(resp, "text"),
-    simplifyVector = FALSE)
+    simplifyVector = TRUE,
+    flatten = TRUE)
 
   if (df) {
-    tryCatch( {
-      if (!is.null(names(parsed$data))) {
-        parsed <- get_df(parsed$data)
-      }
-      parsed <- map(parsed$data, get_df) %>%
-        reduce(bind_rows) },
-      error = function(cnd) {
-        message("Conversion to data frame failed; returning nested list")
-      }
-    )
+    return(parsed$data)
+    # tryCatch( {
+    #   if (!is.null(names(parsed$data))) {
+    #     parsed <- get_df(parsed$data)
+    #   }
+    #   parsed <- map(parsed$data, get_df) %>%
+    #     reduce(bind_rows) },
+    #   error = function(cnd) {
+    #     message("Conversion to data frame failed; returning nested list")
+    #   }
+   # )
   }
   parsed
 }
@@ -127,27 +129,3 @@ iterate_over_pages <- function(url) {
 
 
 
-#' Convert Element of Nested List from jsonlite::fromJSON into Data Frame
-#'
-#' Can be used iteratively in conjunction with \code{bind_rows} to convert the
-#'  entire nested list into a data frame.
-#' @param element a named nested list
-#' @return the element converted to a data frame
-get_df <- function(element) {
-
-  if (!is.null(element$attributes$fileFormats)) {
-    fileFormats <- unlist(element$attributes$fileFormats)
-    fileFormats <- fileFormats[grepl("http", fileFormats)] %>%
-    paste0(collapse = ",") %>%
-    gsub('"', "", .)
-    element$attributes$fileFormats <- fileFormats
-
-    }
-
-  element %>%
-    unlist() %>%
-    t() %>%
-    as.data.frame() %>%
-    # remove attributes part of column names
-    dplyr::rename_with(~gsub("attributes.", "", .x, fixed = TRUE))
-}

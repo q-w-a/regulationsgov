@@ -25,8 +25,10 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
   if (!is.null(docketId)) {
     documents <- iterate_over_pages(construct_document_url(docketId = docketId,
                                                            key = key))
-    documentId <- map(documents$data, ~find_element(.x, "id")) %>%
-      unlist()
+
+    documentId <- documents$data$id
+    # documentId <- map(documents$data, ~find_element(.x, "id")) %>%
+    #   unlist()
   }
 
   documents <- map(documentId,
@@ -44,16 +46,7 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
                                     as.character)))
       bind_rows(documents)
     }
-
   )
-
-
-  result %>%
-    dplyr::mutate(dplyr::across(everything(),
-                                ~replace(.,
-                                         . == "NULL",
-                                         NA)))
-
 
 }
 

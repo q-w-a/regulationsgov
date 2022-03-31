@@ -1,6 +1,4 @@
 
-
-
 #' Create a URL for the Documents Endpoint
 #'
 #' Takes the parameters available for the documents endpoint of the regulations.gov API, as
@@ -73,6 +71,8 @@ construct_document_url <- function(
   page_size = 250) {
   # get arguments as a named list
   arguments <- as.list(environment())
+  # set needed global variables to NULL
+  term <- value <- filt <- NULL
   # retrieve key
   key <- check_auth(key)
   base <- "https://api.regulations.gov/v4/documents"
@@ -81,12 +81,13 @@ construct_document_url <- function(
     url <- paste0(base, "/", documentId, "?api_key=", key)
 
     if (!is.null(attachments)) {
-      url <- paste0(base, "/", documentId, "?include=attachments&api_key=", key)
+      url <- paste0(base, "/", documentId,
+                    "?include=attachments&api_key=", key)
     }
   }
   else {
     arguments <- map(names(arguments),
-                     ~collapse_values(.,arguments=arguments)) %>%
+                     ~collapse_values(., arguments = arguments)) %>%
       unlist(recursive = FALSE)
     not_filt <- c("sort", "page_number", "page_size")
     filters <- unlist(arguments) %>%
