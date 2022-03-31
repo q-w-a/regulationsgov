@@ -25,7 +25,7 @@ test_that("get_all_comments produces data frame of comment metadata has
 })
 
 test_that("data frame is correct for documentId argument", {
-
+  skip_if_no_key()
   # check functionality with document ID rather than docket ID
   comment_metadata <- get_all_comments(documentId="CMS-2014-0063-0001", test = TRUE)
   expect_equal(nrow(comment_metadata), 3)
