@@ -7,7 +7,7 @@
 get_data(url, df = FALSE)
 }
 \arguments{
-\item{url}{a url containing an API call}
+\item{url}{a url containing a valid API call}
 
 \item{df}{logical, \code{TRUE} if you want the output as a data frame.
 Default value is \code{FALSE}}

@@ -2,7 +2,7 @@
 
 #' Acquire Data for the Given Url
 #'
-#' @param url a url containing an API call
+#' @param url a url containing a valid API call
 #' @param df logical, \code{TRUE} if you want the output as a data frame.
 #' Default value is \code{FALSE}
 #' @importFrom httr config GET
@@ -36,16 +36,6 @@ get_data <- function(url, df = FALSE) {
 
   if (df) {
     return(parsed$data)
-    # tryCatch( {
-    #   if (!is.null(names(parsed$data))) {
-    #     parsed <- get_df(parsed$data)
-    #   }
-    #   parsed <- map(parsed$data, get_df) %>%
-    #     reduce(bind_rows) },
-    #   error = function(cnd) {
-    #     message("Conversion to data frame failed; returning nested list")
-    #   }
-   # )
   }
   parsed
 }

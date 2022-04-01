@@ -29,7 +29,7 @@ extract_meta <- function(link, key = NULL) {
   api_link <- paste0(link, "?include=attachments&api_key=", key)
   parsed <- get_data(api_link)
 
-  metadata <- parsed$data$attributes
+  #metadata <- parsed$data$attributes
 
   # check if nested list contains download url
  # file_url_exists <- find_element(parsed, "fileUrl")
@@ -49,7 +49,11 @@ extract_meta <- function(link, key = NULL) {
                              fixed = TRUE)) %>%
     mutate(dplyr::across(dplyr::everything(),
                   ~paste0(unlist(.x),
-                          collapse=','))) %>%
+                          collapse = ','))) %>%
+    mutate(fileUrl = paste0(
+      select(., contains("fileUrl")),
+                            collapse = ",")) %>%
+    select(-dplyr::matches("fileUrl[[:digit:]]")) %>%
     select(-which(dplyr::all_of(.) == ""))
 
   # add ID
