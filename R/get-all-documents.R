@@ -10,6 +10,7 @@
 #'   chosen to set up the key as an environmental variable instead with the function
 #'   \code{\link{set_datagov_key}}. You can use "DEMO_KEY" for a very limited number of calls if needed.
 #' @return a data frame
+#' @export
 #' @examples
 #' # retrieve metadata and download links for FDA-2009-N-0501
 #' \dontrun{

@@ -3,6 +3,8 @@
 export(construct_document_url)
 export(find_element)
 export(get_all_comments)
+export(get_all_documents)
+export(get_data)
 export(set_datagov_key)
 importFrom(dplyr,across)
 importFrom(dplyr,bind_rows)

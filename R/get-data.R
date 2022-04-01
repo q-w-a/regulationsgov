@@ -6,7 +6,7 @@
 #' @param df logical, \code{TRUE} if you want the output as a data frame.
 #' Default value is \code{FALSE}
 #' @importFrom httr config GET
-#'
+#' @export
 #' @examples
 #'\dontrun{
 #'get_data("https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&api_key=DEMO_KEY")
