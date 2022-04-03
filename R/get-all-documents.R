@@ -12,7 +12,6 @@
 #' @return a data frame
 #' @export
 #' @examples
-#' # retrieve metadata and download links for FDA-2009-N-0501
 #' \dontrun{
 #' # get all document data for documents associated with docket FDA-2009-N-0501
 #' result <- get_all_documents(docketId ="FDA-2009-N-0501")
@@ -28,8 +27,6 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
                                                            key = key))
 
     documentId <- documents$data$id
-    # documentId <- map(documents$data, ~find_element(.x, "id")) %>%
-    #   unlist()
   }
 
   documents <- map(documentId,

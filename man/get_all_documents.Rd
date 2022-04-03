@@ -24,7 +24,6 @@ a data frame
 Get Document Metadata for Given Documents or Docket
 }
 \examples{
-# retrieve metadata and download links for FDA-2009-N-0501
 \dontrun{
 # get all document data for documents associated with docket FDA-2009-N-0501
 result <- get_all_documents(docketId ="FDA-2009-N-0501")

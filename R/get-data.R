@@ -35,7 +35,8 @@ get_data <- function(url, df = FALSE) {
     flatten = TRUE)
 
   if (df) {
-    return(parsed$data)
+    parsed <- parsed$data %>%
+      convert_df()
   }
   parsed
 }
@@ -113,7 +114,38 @@ iterate_over_pages <- function(url) {
 }
 
 
+get_all <- function(url, first) {
 
+  n < - first$meta$totalElements
+
+}
+
+#' Helper Function to Convert get_data output to data frame
+#'
+#' This function is for use with the `df=TRUE` argument with
+#' \code{\link{get_data}}. It converts the nested list containing
+#' the data into a data frame.
+#'
+#' @param parsed_data output from `jsonlite::fromJSON(httr::content(resp, "text"),simplifyVector = TRUE,flatten = TRUE)`
+#' in the get_data function.
+#'
+#' @return a data frame of 1 row, where each column represents
+#' data a field of information from the nested list.
+convert_df <- function(parsed_data) {
+
+  if (!is.data.frame(parsed_data)) {
+
+  parsed_data <- parsed_data %>%
+      unlist(recursive = FALSE) %>%
+      t()  %>%
+      as.data.frame()
+  }
+  parsed_data %>%
+    select(!dplyr::contains("display")) %>%
+    rename_with(~gsub("attributes\\.",
+                      "",
+                      .x))
+}
 
 
 

@@ -11,20 +11,23 @@
 #' @param key the API key passed in the function call; this may be NULL if the user has
 #'   chosen to set up the key as an environmental variable instead with the function
 #'   \code{\link{set_datagov_key}}. You can use "DEMO_KEY" for a very limited number of calls if needed.
-#' @param documentId character string representing a valid document ID, for example, "CMS-2014-0063-0001"
+#' @param documentId character string representing one valid document ID, for example, "CMS-2014-0063-0001".
+#' Only one documentId can be provided.
 #' @param attachments character string "true" if you want the download links included for a document,
 #' otherwise leave as NULL. Note the API only provides functionality for obtaining download link if you provide a document ID
 #' with the `documentId` argument.
-#' @param docketId character string representing a valid docket ID, for example, "CMS-2014-0063"
+#' @param docketId character string representing a valid docket ID, for example, "CMS-2014-0063",
+#' or a character vector of multiple docketIds, for example,  `c("CMS-2014-0063", "NIH-2007-0930")`
 #' @param agencyId character string representing a government agency, for example, "CMS" or "EPA" or a character
-#' vector of multiple agencies.
-#' @param commentEndDate character vector of length 1, representing a single comment end date, or length
+#' vector of multiple agencies
+#' @param commentEndDate character string of length 1, representing a single comment end date, or length
 #'  2, representing a date range starting with the first element of the vector and ending at the second element
 #'  of the vector. The format of each date must be yyyy-MM-dd, for example, "2020-12-01"
 #' @param documentType character string that is one of the following categories, or, if multiple document types
 #' are desired, a character vector containing a subset of these categories:
 #'  "Notice", "Rule", "Proposed Rule", "Supporting & Related Material", "Other"
-#' @param frDocNum character string representing the Federal Register Number, for example, "2014-10228"
+#' @param frDocNum character string representing the Federal Register Number, for example, "2014-10228".
+#' Only a single federal register number is accepted.
 #' @param searchTerm character string representing a search term to filter the results for or a character
 #' vector with multiple search terms to filter for.
 #' @param postedDate character vector of length 1, representing a single posted date, or a vector of length
@@ -32,7 +35,7 @@
 #'  must be in the format yyyy-MM-dd.
 #' @param lastModifiedDate a character vector of length 1, representing a single posted date to filter for,
 #'  or a vector of length 2, representing a date range beginning with the first element and ending at the second.
-#'  Each element must be in the format yyyy-MM-dd.
+#'  Each element must be in the format yyyy-MM-dd HH:mm:ss.
 #' @param subtype character string representing a document subtype, for example, "Petitions for Exemption" or
 #' "Request for Comments"
 #' @param withinCommentPeriod "true" if you only want results that are still open for comment, otherwise leave
@@ -40,9 +43,9 @@
 #' @param sort character string representing which value you want to sort the results by, supported variables are
 #'  "commentEndDate", "postedDate", "lastModifiedDate", "documentId" and "title"
 #' @param page_number character string representing which page to retrieve the data; useful when
-#' output is on multiple pages. Valid values are
+#' output is on multiple pages. Valid values are between 1 and 20. Default value is 1.
 #' @param page_size character string representing how many elements should be on each page. Valid values
-#' are between 5 and 250.
+#' are between 5 and 250. The default value is 250.
 #' @export
 #' @examples
 #' \dontrun{
@@ -69,8 +72,13 @@ construct_document_url <- function(
   sort = NULL,
   page_number = 1,
   page_size = 250) {
+
   # get arguments as a named list
   arguments <- as.list(environment())
+
+  # check that given arguments are valid
+  validate_params(arguments)
+
   # set needed global variables to NULL
   term <- value <- filt <- NULL
   # retrieve key
@@ -114,6 +122,14 @@ construct_document_url <- function(
                          filt,
                          fixed = TRUE),
              filt = gsub("[postedDate2]",
+                         "[postedDate][le]",
+                         filt,
+                         fixed = TRUE),
+             filt = gsub("[lastModifiedDate1]",
+                         "[postedDate][ge]",
+                         filt,
+                         fixed = TRUE),
+             filt = gsub("[lastModifiedDate2]",
                          "[postedDate][le]",
                          filt,
                          fixed = TRUE)) %>%

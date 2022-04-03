@@ -92,3 +92,12 @@ test_that("collapsing multiple arguments works for construct_document_url", {
   expect_equal(url,
   "https://api.regulations.gov/v4/documents?filter[agencyId]=CMS,EPA&filter[postedDate][ge]=2020-02-02&filter[postedDate][le]=2020-10-02&page[number]=1&page[size]=250&api_key=DEMO_KEY")
 })
+
+
+test_that("construct_document_url ignores docketId if documentId is provided", {
+  url <- construct_document_url(documentId = "NIH-2007-0930-0001",
+                         docketId = "NIH-2007-0930",
+                         key = "DEMO_KEY")
+  expect_equal(url, "https://api.regulations.gov/v4/documents/NIH-2007-0930-0001?api_key=DEMO_KEY")
+})
+
