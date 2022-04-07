@@ -137,11 +137,14 @@ construct_document_url <- function(
    if (!is.null(arguments[[x]]) &
        !(x %in% c("postedDate",
                   "lastModifiedDate"))) {
-     args <- unlist(arguments[x])
-     args <- tryCatch( {args %>% URLencode(reserved=TRUE)},
-                       error = function(e) {
-                         return(args)
-                       })
+     args <- unlist(arguments[[x]])
+     args <- tryCatch({
+     args <- purrr::map_chr(args, ~as.character(.x) %>%
+                              URLencode(reserved=TRUE))
+    #   args %>% URLencode(reserved=TRUE);
+       },
+        error = function(e) {
+          return(args)})
      arguments[x] <- paste0(unlist(args), collapse = ',')
      return(arguments[x])
    }
