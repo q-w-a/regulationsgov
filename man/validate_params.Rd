@@ -2,7 +2,7 @@
 % Please edit documentation in R/validate-params.R
 \name{validate_params}
 \alias{validate_params}
-\title{Validate the Parameters Passed to the construct_document_url Funciton}
+\title{Validate the Parameters Passed to the construct_document_url Function}
 \usage{
 validate_params(arg_list)
 }
