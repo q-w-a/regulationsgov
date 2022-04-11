@@ -23,16 +23,28 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
   key <- check_auth(key)
 
   if (!is.null(docketId)) {
-    documents <- iterate_over_pages(construct_document_url(docketId = docketId,
-                                                           key = key))
-
+    documents <- construct_document_url(docketId = docketId,
+                                        key = key) %>%
+      iterate_over_pages()
     documentId <- documents$data$id
+  }
+
+  if (length(documentId) > 500) {
+    if (interactive()) {
+      continue <- check_continue(length(documentId))
+      if (!continue) return(NULL)
+    }
+    extract_meta_slow <- purrr::slowly(extract_meta,
+                                       rate = purrr::rate_delay(7.2))
+  }
+  else {
+    extract_meta_slow <- extract_meta
   }
 
   documents <- map(documentId,
                    ~paste0("https://api.regulations.gov/v4/documents/",
                            .x) %>%
-                     extract_meta(key = key))
+                     extract_meta_slow(key = key))
 
   result <- tryCatch( {
     bind_rows(documents)
@@ -45,7 +57,7 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
       bind_rows(documents)
     }
   )
-
+  return(result)
 }
 
 
