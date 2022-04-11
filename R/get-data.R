@@ -95,7 +95,7 @@ iterate_over_pages <- function(url) {
   first <- get_data_by_page(url, page_number = 1)
 
   if (is.null(first$meta$totalElements)) {
-    message("no pages")
+    # message("no pages")
     pages <- first
   }
 
@@ -124,9 +124,75 @@ iterate_over_pages <- function(url) {
 }
 
 
-get_all <- function(url, first) {
+#' Extract All Elements When there are More than 5000
+#'
+#' This function uses the procedure outlined [here](https://open.gsa.gov/api/regulationsgov/#searching-for-documents) under the section
+#' *Retrieve all comments for a docket where number of comments is greater than 5000*
+#' @param url that you want to obtain all data for, where there are more than 5000 elements. This url
+#' *must* be sorted by lastModifiedDate and documentId. For example,
+#' \code{"https://api.regulations.gov/v4/comments?filter[commentOnId]=09000064846eebaf&page[size]=250&page[number]=1&sort=lastModifiedDate,documentId&api_key=DEMO_KEY"}
+#' @param num_elements number of elements associated with the given `url` (totalElements)
+get_all <- function(url, num_elements) {
 
-  n < - first$meta$totalElements
+  n <- num_elements
+
+  # 20 pages, 250 elements per page
+  iterations <- floor(n / (250*20)) + 1
+
+  results <- map(1:20, ~get_data_by_page(page_number = .x,
+                                            url = url)$data)
+  # extract the date in the last element
+  last_date <- find_element(results[[20]],
+                            "lastModifiedDate") %>%
+    unlist(use.names = FALSE)
+
+  last_date <- last_date[length(last_date)]
+  last_date <- convert_time(last_date)
+
+  for (i in 2:(iterations)) {
+
+    url_split <- strsplit(url, "page[size]",
+                          fixed= TRUE) %>%
+      unlist()
+    new_url <- paste0(url_split[1],
+                      "filter[lastModifiedDate][ge]=",
+                      last_date,
+                      "&page[size]",
+                      url_split[2])
+    url_split <- strsplit(url, "sort") %>%
+      unlist()
+
+    message(new_url)
+
+    pages <- map(1:20, ~get_data_by_page(page_number = .x,
+                                           url = new_url)$data)
+
+    last_date <- find_element(pages[[20]],
+                              "lastModifiedDate") %>%
+      unlist(use.names = FALSE)
+
+    last_date <- last_date[length(last_date)]
+    last_date <- convert_time(last_date)
+    # message(last_date)
+
+    results <- append(results, pages)
+  }
+  return(results)
+}
+
+
+#' Convert Date of the form '2020-07-22T18:28:40Z' to Eastern Time
+#' @param date of the form '2020-07-22T18:27:52Z'
+#' @return date of the form '2020-07-22 14:28:40'
+convert_time <- function(date) {
+  date <- gsub("T", " ", date)
+  time <- strptime(date,
+                   format = "%Y-%m-%d %T",
+                   tz = "UTC") %>%
+    as.POSIXct() %>%
+    format(tz = "America/New_York")
+
+  return(time)
 
 }
 
@@ -138,7 +204,7 @@ get_all <- function(url, first) {
 #' \code{\link{get_data}}. It converts the nested list containing
 #' the data into a data frame.
 #'
-#' @param parsed_data output from `jsonlite::fromJSON(httr::content(resp, "text"),simplifyVector = TRUE,flatten = TRUE)`
+#' @param parsed_data output from `jsonlite::fromJSON(httr::content(resp, "text"), simplifyVector = TRUE,flatten = TRUE)`
 #' in the get_data function.
 #'
 #' @return a data frame of 1 row, where each column represents
