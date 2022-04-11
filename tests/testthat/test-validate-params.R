@@ -143,5 +143,27 @@ test_that("validate_params throws correct errors", {
   expect_error(validate_params(arg_list),
                "only can sort by one or more of the following")
 
+  arg_list <- list(key = NULL,
+                   documentId =  NULL,
+                   attachments = NULL,
+                   docketId = NULL,
+                   agencyId = NULL,
+                   commentEndDate = NULL,
+                   documentType = NULL,
+                   frDocNum = NULL,
+                   searchTerm = NULL,
+                   postedDate = NULL,
+                   lastModifiedDate = c("2020-10-10", "2020-11-10"),
+                   subtype = NULL,
+                   withinCommentPeriod = NULL,
+                   sort = NULL,
+                   page_number = 1,
+                   page_size = 250)
+
+
+  expect_error(validate_params(arg_list),
+               "Check Entries: 2020-10-10, 2020-11-10")
+
+
 
 })
