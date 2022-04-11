@@ -13,8 +13,15 @@
 #'}
 get_data <- function(url, df = FALSE) {
 
-  resp <- httr::GET(url, config = config(ssl_verifypeer=FALSE))
-
+  #resp <- httr::GET(url, config = config(ssl_verifypeer=FALSE))
+  resp <- httr::RETRY(verb = "GET",
+                      url = url,
+                      config = config(ssl_verifypeer = FALSE),
+                      pause_min = 4,
+                      pause_base = 2,
+                      pause_cap = 3010,
+                      max_times = 50,
+                      terminate_on = 400)
   # check if type is as expected
   if (httr::http_type(resp) != "application/vnd.api+json") {
     httr::http_status(resp) %>%
@@ -107,8 +114,11 @@ iterate_over_pages <- function(url) {
     pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url))
   }
   else{
-    message("not yet implemented; call will take over an hour due to API rate limit")
-    pages <- first
+    message("There are ", first$meta$totalElements,
+            " comments. The time for this request for detailed information is expected to be at least ",
+            (first$meta$totalElements/500), " hours.")
+  #  message("not yet implemented; call will take over an hour due to API rate limit")
+    pages <- get_all(url, first$meta$totalElements)
   }
   return(pages)
 }
@@ -119,6 +129,8 @@ get_all <- function(url, first) {
   n < - first$meta$totalElements
 
 }
+
+
 
 #' Helper Function to Convert get_data output to data frame
 #'
