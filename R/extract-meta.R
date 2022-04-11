@@ -34,27 +34,37 @@ extract_meta <- function(link, key = NULL) {
   # check if nested list contains download url
  # file_url_exists <- find_element(parsed, "fileUrl")
 
+
   comment_meta_df <- parsed %>%
     unlist(recursive = TRUE) %>%
     t()  %>%
     as.data.frame()
 
+  names(comment_meta_df) <- make.names(names(comment_meta_df),
+                                       unique=TRUE)
 
+  tryCatch({
+    comment_meta_df <- comment_meta_df %>%
+      mutate(dplyr::across(dplyr::everything(),
+                           ~paste0(unlist(.x),
+                                   collapse = ','))) %>%
+      mutate(fileUrl = paste0(
+        select(., contains("fileUrl")),
+        collapse = ",")) %>%
+      select(-dplyr::matches("fileUrl[[:digit:]]|fileUrl\\.[[:digit:]]|\\.fileUrl")) %>%
+      select(-which(dplyr::all_of(.) == "")) %>%
+      select(!dplyr::contains("display")) %>%
+       rename_with(~gsub("fileFormats\\.|attributes\\.|included\\.",
+                                "", .x)) %>%
+      rename_with(~gsub(".", "_", .x,
+                        fixed = TRUE))
+  },
+  error = function(e) {
+    message("error with", api_link)
+    return(parsed)
+  })
   # remove unnecessary columns and clean column names
-  comment_meta_df <- comment_meta_df %>%
-    select(!dplyr::contains("display")) %>%
-    rename_with(~gsub("fileFormats\\.|attributes\\.|included\\.",
-                             "", .x)) %>%
-    rename_with(~gsub(".", "_", .x,
-                             fixed = TRUE)) %>%
-    mutate(dplyr::across(dplyr::everything(),
-                  ~paste0(unlist(.x),
-                          collapse = ','))) %>%
-    mutate(fileUrl = paste0(
-      select(., contains("fileUrl")),
-                            collapse = ",")) %>%
-    select(-dplyr::matches("fileUrl[[:digit:]]")) %>%
-    select(-which(dplyr::all_of(.) == ""))
+
 
   # add ID
   comment_meta_df$cid <- parsed$data$id
