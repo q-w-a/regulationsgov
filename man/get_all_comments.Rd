@@ -4,7 +4,13 @@
 \alias{get_all_comments}
 \title{Get All Comments for a Specific Docket or Document}
 \usage{
-get_all_comments(docketId = NULL, documentId = NULL, test = FALSE, key = NULL)
+get_all_comments(
+  docketId = NULL,
+  documentId = NULL,
+  test = FALSE,
+  key = NULL,
+  quiet = TRUE
+)
 }
 \arguments{
 \item{docketId}{character string; the docket ID for the comments needed. If you're providing a document
@@ -18,6 +24,11 @@ ID with the \code{document_id} argument, this should be left \code{NULL}.}
 been set up the key as an environmental variable instead with the function
 \code{\link{set_datagov_key}}. You can use "DEMO_KEY" for a very limited number of calls if needed.
 Obtain a key at \href{https://open.gsa.gov/api/regulationsgov/#getting-started}{here}.}
+
+\item{quiet}{logical; FALSE if you want to see the progress of the function as it
+acquires detailed information for each comment. This is recommended if you are obtaining
+more than 500 comments, since this call will take over an hour to run due to rate
+limits for the API.}
 }
 \value{
 a data frame containing the comment metadata, including the download links
