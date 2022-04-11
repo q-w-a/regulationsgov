@@ -42,6 +42,7 @@ test_that("data frame is correct for full example", {
 })
 
 test_that("quiet works and expected message is provided", {
+  skip_if_no_key()
   expect_message( get_all_comments(documentId = "CMS-2017-0082-0002",
                                    test = TRUE,
                                    quiet = FALSE),
