@@ -61,7 +61,7 @@ must be in the format yyyy-MM-dd.}
 
 \item{lastModifiedDate}{a character vector of length 1, representing a single posted date to filter for,
 or a vector of length 2, representing a date range beginning with the first element and ending at the second.
-Each element must be in the format yyyy-MM-dd.}
+Each element must be in the format yyyy-MM-dd HH:mm:ss.}
 
 \item{subtype}{character string representing a document subtype, for example, "Petitions for Exemption" or
 "Request for Comments"}
