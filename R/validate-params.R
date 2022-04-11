@@ -112,7 +112,7 @@ check_date <- function(dates, param) {
                   " must be a single character string or a character vector of length 2")
   }
 
-  else if (param != "lastModifiedDate") {
+  if (param != "lastModifiedDate") {
     invalid <- !grepl("\\d\\d\\d\\d-\\d\\d-\\d\\d",
                       dates)
     if (any(invalid)) {
