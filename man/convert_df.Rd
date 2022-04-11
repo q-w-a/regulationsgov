@@ -7,7 +7,7 @@
 convert_df(parsed_data)
 }
 \arguments{
-\item{parsed_data}{output from \code{jsonlite::fromJSON(httr::content(resp, "text"),simplifyVector = TRUE,flatten = TRUE)}
+\item{parsed_data}{output from \code{jsonlite::fromJSON(httr::content(resp, "text"), simplifyVector = TRUE,flatten = TRUE)}
 in the get_data function.}
 }
 \value{
