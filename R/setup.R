@@ -1,4 +1,4 @@
-#not working
+utils::globalVariables(c("."))
 
 #' Set Data.gov Key as an Environmental Variable
 #'

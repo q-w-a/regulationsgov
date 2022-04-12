@@ -8,7 +8,7 @@
 #' Ensure the arguments the construct_document_url function receives
 #' aren't invalid. This helps to prevent making failed API calls.
 #'
-#' @param arg_list named list of arguments from the \code{\link{construct_document_url}}
+#' @param arg_list named list containing arguments to the [construct_document_url()] function.
 validate_params <- function(arg_list) {
 
   err <- ""

@@ -4,11 +4,14 @@
 \alias{iterate_over_pages}
 \title{Get All the Elements When Iteration Over Pages May Be Necessary}
 \usage{
-iterate_over_pages(url)
+iterate_over_pages(url, quiet = TRUE)
 }
 \arguments{
 \item{url}{a valid API url that includes the \code{page[size]} and \code{page[number]}
 parameters.}
+
+\item{quiet}{logical; FALSE if you want detailed information printed to the console,
+TRUE otherwise. FALSE is recommended for longer calls to monitor the progress.}
 }
 \value{
 a nested list containing all elements corresponding to the given url.

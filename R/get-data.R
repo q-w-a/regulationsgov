@@ -21,7 +21,7 @@ get_data <- function(url, df = FALSE) {
                       pause_base = 2,
                       pause_cap = 3010,
                       max_times = 50,
-                      terminate_on = 400)
+                      terminate_on = c(400,403))
   # check if type is as expected
   if (httr::http_type(resp) != "application/vnd.api+json") {
     httr::http_status(resp) %>%
@@ -55,18 +55,19 @@ get_data <- function(url, df = FALSE) {
 #'
 #' @param url a url containing an API call
 #' @param page_number page number to obtain data for, default value is 1
-#'
+#' @param quiet logical; FALSE if you want detailed information printed to the console,
+#' TRUE otherwise. FALSE is recommended for longer calls to monitor the progress.
 #' @examples
 #' \dontrun{
 #' get_data_by_page("https://api.regulations.gov/v4/documents?
 #' filter[docketId]=CMS-2014-0063&page[size]=250&page[number]=1&api_key=DEMO_KEY",
 #' page_number = 2)
 #' }
-get_data_by_page <- function(url, page_number = 1) {
+get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
   # set page number to given page
-  for_page <- paste0("page[number]=", page_number, "&sort")
-  url_for_page <- gsub("page\\[number\\](.*)sort", for_page, url)
-  # print(url_for_page)
+  for_page <- paste0("page[number]=", page_number, "&")
+  url_for_page <- gsub("page\\[number\\]=[0-9]+&", for_page, url, perl = TRUE)
+  if (!quiet) message("Page ", page_number, ": ", url_for_page)
   get_data(url_for_page)
 }
 
@@ -83,6 +84,8 @@ get_data_by_page <- function(url, page_number = 1) {
 #'
 #' @param url a valid API url that includes the \code{page[size]} and \code{page[number]}
 #' parameters.
+#' @param quiet logical; FALSE if you want detailed information printed to the console,
+#' TRUE otherwise. FALSE is recommended for longer calls to monitor the progress.
 #' @return a nested list containing all elements corresponding to the given url.
 #' Functionality is not yet implemented for obtaining all elements when there are
 #' more than 5000 elements.
@@ -91,11 +94,13 @@ get_data_by_page <- function(url, page_number = 1) {
 #' [commentOnId]=09000064816e1a41&page[size]=250&page[number]=1&
 #' sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
 #' }
-iterate_over_pages <- function(url) {
+iterate_over_pages <- function(url, quiet = TRUE) {
   first <- get_data_by_page(url, page_number = 1)
 
+  if (!quiet) message("Number of Elements is: ",
+                      first$meta$totalElements)
+
   if (is.null(first$meta$totalElements)) {
-    # message("no pages")
     pages <- first
   }
 
@@ -106,12 +111,10 @@ iterate_over_pages <- function(url) {
   }
 
   else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000 ) {
-   # message("Number of elements is  ", first$meta$totalElements, " so iterating over pages")
-
     # since we can have 250 elements on each page, set number of pages to get all elements
     end <- floor(first$meta$totalElements /250) + 1
     # print(end)
-    pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url))
+    pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url, quiet = quiet))
   }
   else{
     message("There are ", first$meta$totalElements,

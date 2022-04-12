@@ -4,12 +4,15 @@
 \alias{get_data_by_page}
 \title{Acquire Data for the Given Page and Url}
 \usage{
-get_data_by_page(url, page_number = 1)
+get_data_by_page(url, page_number = 1, quiet = TRUE)
 }
 \arguments{
 \item{url}{a url containing an API call}
 
 \item{page_number}{page number to obtain data for, default value is 1}
+
+\item{quiet}{logical; FALSE if you want detailed information printed to the console,
+TRUE otherwise. FALSE is recommended for longer calls to monitor the progress.}
 }
 \description{
 Get data for the given page number. Used for iterating over pages when

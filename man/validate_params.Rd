@@ -7,7 +7,7 @@
 validate_params(arg_list)
 }
 \arguments{
-\item{arg_list}{named list of arguments from the \code{\link{construct_document_url}}}
+\item{arg_list}{named list containing arguments to the \code{\link[=construct_document_url]{construct_document_url()}} function.}
 }
 \description{
 Ensure the arguments the construct_document_url function receives

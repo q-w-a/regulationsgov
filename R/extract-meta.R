@@ -22,17 +22,10 @@
 #' result_doc <- extract_meta("https://api.regulations.gov/v4/documents/NIH-2006-0048-0001")
 #' }
 extract_meta <- function(link, key = NULL) {
-  # set to NULL to create binding
-  . <- NULL
   key <- check_auth(key)
 
   api_link <- paste0(link, "?include=attachments&api_key=", key)
   parsed <- get_data(api_link)
-
-  #metadata <- parsed$data$attributes
-
-  # check if nested list contains download url
- # file_url_exists <- find_element(parsed, "fileUrl")
 
 
   comment_meta_df <- parsed %>%

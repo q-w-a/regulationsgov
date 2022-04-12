@@ -4,26 +4,16 @@
 \alias{get_all_comments}
 \title{Get All Comments for a Specific Docket or Document}
 \usage{
-get_all_comments(
-  docketId = NULL,
-  documentId = NULL,
-  test = FALSE,
-  key = NULL,
-  quiet = TRUE
-)
+get_all_comments(..., test = FALSE, key = NULL, quiet = TRUE)
 }
 \arguments{
-\item{docketId}{character string; the docket ID for the comments needed. If you're providing a document
-ID with the \code{document_id} argument, this should be left \code{NULL}.}
-
-\item{documentId}{character string; the document ID for the comments needed.}
+\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}}.}
 
 \item{test}{logical; to test if the output is as expected without using up many API calls.}
 
-\item{key}{your regulations.gov API key. You can leave this NULL if the key has
-been set up the key as an environmental variable instead with the function
-\code{\link{set_datagov_key}}. You can use "DEMO_KEY" for a very limited number of calls if needed.
-Obtain a key at \href{https://open.gsa.gov/api/regulationsgov/#getting-started}{here}.}
+\item{key}{the API key passed in the function call; this may be NULL if the user has
+chosen to set up the key as an environmental variable instead with the function
+\code{\link[=set_datagov_key]{set_datagov_key()}}. You can use "DEMO_KEY" for a very limited number of calls if needed.}
 
 \item{quiet}{logical; FALSE if you want to see the progress of the function as it
 acquires detailed information for each comment. This is recommended if you are obtaining
@@ -43,5 +33,14 @@ or docket ID as multiple API calls will be necessary.
 \dontrun{
 # retrieve all comments for docket CMS-2014-0063
 comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063", test = TRUE)
+
+# retrieve all comments for document NIH-2007-0930-0001
+comment_metadata <- get_all_comments(documentId="NIH-2007-0930-0001")
+
+# retrieve all comments for documents last modified between 2021-04-01 12:00:00 and
+2021-04-02 12:00:00 with search term 'privacy'
+comments <- get_all_comments(lastModifiedDate =
+c("2021-04-01 12:00:00", "2021-04-02 12:00:00"),
+quiet = FALSE, searchTerm = "privacy")
 }
 }
