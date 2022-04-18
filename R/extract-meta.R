@@ -1,3 +1,4 @@
+utils::globalVariables(".")
 
 #' Extract Metadata for Specific Documents or Comments
 #'
@@ -13,7 +14,6 @@
 #' @importFrom rlang .data
 #' @importFrom dplyr select contains across everything rename_with mutate
 #' @keywords internal
-#'  utils::globalVariables(".")
 #' @examples
 #' \dontrun{
 #' # get comment metadata for a specific comment
@@ -33,6 +33,7 @@ extract_meta <- function(link, key = NULL) {
     t()  %>%
     as.data.frame()
 
+  # fix duplicated names
   names(comment_meta_df) <- make.names(names(comment_meta_df),
                                        unique=TRUE)
 
@@ -56,11 +57,8 @@ extract_meta <- function(link, key = NULL) {
     message("error with", api_link)
     return(parsed)
   })
-  # remove unnecessary columns and clean column names
-
-
   # add ID
-  comment_meta_df$cid <- parsed$data$id
+  #comment_meta_df$cid <- parsed$data$id
 
   # return data frame of metadata for a single comment ID
   return(comment_meta_df)

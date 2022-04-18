@@ -32,4 +32,3 @@ result_doc <- extract_meta("https://api.regulations.gov/v4/documents/NIH-2006-00
 }
 }
 \keyword{internal}
-\keyword{utils::globalVariables(".")}

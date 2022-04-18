@@ -6,6 +6,7 @@
 #' @param key the API key passed in the function call; this may be NULL if the user has
 #'   chosen to set up the key as an environmental variable instead with the function
 #'   \code{\link{set_datagov_key}}
+#' @keywords internal
 check_auth <- function(key) {
   if (identical(Sys.getenv("DATA_GOV_KEY"), "") && is.null(key)) {
     stop("Valid API key needed. Obtain one at https://open.gsa.gov/api/regulationsgov/#getting-started")
@@ -29,6 +30,7 @@ check_auth <- function(key) {
 #' @param search_for a character string that is the name of the element we want to find in `nested_list`
 #' @return any values of the list where the name contains the substring `search_for`
 #' @importFrom utils hasName
+#' @keywords internal
 #' @export
 #' @examples {
 #' # create list of data frames for example

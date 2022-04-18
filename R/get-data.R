@@ -105,7 +105,6 @@ iterate_over_pages <- function(url, quiet = TRUE) {
   }
 
   else if (first$meta$totalElements <= 250) {
-    #message("Number of elements is only ", first$meta$totalElements)
     # all elements will be on the first page
     pages <- first
   }
@@ -120,8 +119,7 @@ iterate_over_pages <- function(url, quiet = TRUE) {
     message("There are ", first$meta$totalElements,
             " comments. The time for this request for detailed information is expected to be at least ",
             (first$meta$totalElements/500), " hours.")
-  #  message("not yet implemented; call will take over an hour due to API rate limit")
-    pages <- get_all(url, first$meta$totalElements)
+    pages <- get_all(url, first$meta$totalElements, quiet = quiet)
   }
   return(pages)
 }
@@ -135,7 +133,9 @@ iterate_over_pages <- function(url, quiet = TRUE) {
 #' *must* be sorted by lastModifiedDate and documentId. For example,
 #' \code{"https://api.regulations.gov/v4/comments?filter[commentOnId]=09000064846eebaf&page[size]=250&page[number]=1&sort=lastModifiedDate,documentId&api_key=DEMO_KEY"}
 #' @param num_elements number of elements associated with the given `url` (totalElements)
-get_all <- function(url, num_elements) {
+#' @param quiet logical; FALSE if you want the urls to be printed as this function iterates. Default value is
+#' TRUE, where the urls are not printed to the console.
+get_all <- function(url, num_elements, quiet = TRUE) {
 
   n <- num_elements
 
@@ -165,7 +165,7 @@ get_all <- function(url, num_elements) {
     url_split <- strsplit(url, "sort") %>%
       unlist()
 
-    message(new_url)
+    if (!quiet) message(new_url)
 
     pages <- map(1:20, ~get_data_by_page(page_number = .x,
                                            url = new_url)$data)
@@ -176,7 +176,6 @@ get_all <- function(url, num_elements) {
 
     last_date <- last_date[length(last_date)]
     last_date <- convert_time(last_date)
-    # message(last_date)
 
     results <- append(results, pages)
   }

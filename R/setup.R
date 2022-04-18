@@ -10,7 +10,7 @@ utils::globalVariables(c("."))
 #' the `key` argument.
 #'
 #' @param key valid Data.gov API key obtained \href{https://open.gsa.gov/api/regulationsgov/#getting-started}{here}.
-#' @importFrom magrittr %>%
+#' @importFrom dplyr %>%
 #' @importFrom purrr map reduce
 #' @importFrom utils URLencode
 #' @export
@@ -40,7 +40,7 @@ set_datagov_key <- function(key) {
 
 
 #' Function for Skipping Tests if Authorization is Unavailable
-
+#' @keywords internal
 skip_if_no_key <- function() {
   if (identical(Sys.getenv("DATA_GOV_KEY"), "")) {
     testthat::skip("No authentication available; skipping the test")

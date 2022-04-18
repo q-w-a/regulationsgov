@@ -17,3 +17,4 @@ for further analysis.}
 \description{
 Get Text for Given Link
 }
+\keyword{internal}

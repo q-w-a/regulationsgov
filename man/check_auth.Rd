@@ -14,3 +14,4 @@ chosen to set up the key as an environmental variable instead with the function
 \description{
 This function checks if the user has the API key set up or passed as an argument
 }
+\keyword{internal}

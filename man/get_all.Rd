@@ -4,7 +4,7 @@
 \alias{get_all}
 \title{Extract All Elements When there are More than 5000}
 \usage{
-get_all(url, num_elements)
+get_all(url, num_elements, quiet = TRUE)
 }
 \arguments{
 \item{url}{that you want to obtain all data for, where there are more than 5000 elements. This url
@@ -12,6 +12,9 @@ get_all(url, num_elements)
 \code{"https://api.regulations.gov/v4/comments?filter[commentOnId]=09000064846eebaf&page[size]=250&page[number]=1&sort=lastModifiedDate,documentId&api_key=DEMO_KEY"}}
 
 \item{num_elements}{number of elements associated with the given \code{url} (totalElements)}
+
+\item{quiet}{logical; FALSE if you want the urls to be printed as this function iterates. Default value is
+TRUE, where the urls are not printed to the console.}
 }
 \description{
 This function uses the procedure outlined \href{https://open.gsa.gov/api/regulationsgov/#searching-for-documents}{here} under the section

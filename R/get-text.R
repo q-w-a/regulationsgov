@@ -41,6 +41,7 @@ add_text <- function(df, all = FALSE) {
 #' FALSE if you want to include only one. The default value is FALSE. If you choose
 #' TRUE, note that the attachments may include duplicated text, so this should be considered
 #' for further analysis.
+#' @keywords internal
 get_text <- function(link, all) {
   links <- strsplit(link, ",", fixed = TRUE) %>%
     unlist()
@@ -64,6 +65,7 @@ get_text <- function(link, all) {
 
 #' Choose Link Based on Format
 #' @param links character vector of links
+#' @keywords internal
 choose_element <- function(links) {
 
   docs <- grepl("doc", links)
@@ -85,6 +87,7 @@ choose_element <- function(links) {
 #' @param link a single download link for a document or comment. For example,
 #' "https://downloads.regulations.gov/FDA-2012-S-1144-0322/attachment_1.pdf".
 #' @return text extracted from the given download link
+#' @keywords internal
 extract_text <- function(link) {
   tryCatch( {
     if (is.na(link)) {

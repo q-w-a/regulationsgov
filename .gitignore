@@ -5,3 +5,4 @@
 .DS_Store
 notes.Rmd
 scratch.R
+inst/doc

@@ -9,6 +9,7 @@
 #' aren't invalid. This helps to prevent making failed API calls.
 #'
 #' @param arg_list named list containing arguments to the [construct_document_url()] function.
+#' @keywords internal
 validate_params <- function(arg_list) {
 
   err <- ""

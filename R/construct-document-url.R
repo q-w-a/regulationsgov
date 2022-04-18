@@ -81,6 +81,7 @@ construct_document_url <- function(
 
   # set needed global variables to NULL
   term <- value <- filt <- NULL
+
   # retrieve key
   key <- check_auth(key)
   base <- "https://api.regulations.gov/v4/documents"
@@ -149,6 +150,7 @@ construct_document_url <- function(
 #' @param x name of element in the named list arguments
 #' @param arguments named list containing arguments passed to the
 #'  \code{\link{construct_document_url}} function
+#' @keywords internal
  collapse_values <- function(x, arguments) {
    if (!is.null(arguments[[x]]) &
        !(x %in% c("postedDate",
@@ -157,7 +159,6 @@ construct_document_url <- function(
      args <- tryCatch({
      args <- purrr::map_chr(args, ~as.character(.x) %>%
                               URLencode(reserved=TRUE))
-    #   args %>% URLencode(reserved=TRUE);
        },
         error = function(e) {
           return(args)})
