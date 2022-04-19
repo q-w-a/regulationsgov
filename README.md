@@ -90,10 +90,12 @@ the docket
 
 ``` r
 
+library(dplyr)
 
-result <- regulationsgov::get_all_documents(docketId ="FDA-2009-N-0501")
+documents <- regulationsgov::get_all_documents(docketId ="FDA-2009-N-0501")
 
-dplyr::glimpse(result)
+
+glimpse(documents)
 #> Rows: 9
 #> Columns: 33
 #> $ data_id                                      <chr> "FDA-2009-N-0501-0009", "…
@@ -129,4 +131,51 @@ dplyr::glimpse(result)
 #> $ data_relationships_attachments_links_self    <chr> "https://api.regulations.…
 #> $ data_relationships_attachments_links_related <chr> "https://api.regulations.…
 #> $ fileUrl                                      <chr> "https://downloads.regula…
+```
+
+### Example: Retrieving the Comments Associated with a Specific Docket
+
+In this case, there are only 13 comments associated with docket
+`FDA-2009-N-0501`. We can obtain them with the function
+`get_all_comments`. You might notice the same individual has submitted
+multiple comments, which we also can verify
+[here](https://www.regulations.gov/docket/FDA-2009-N-0501/comments).
+
+``` r
+
+comments <- regulationsgov::get_all_comments(docketId ="FDA-2009-N-0501")
+
+comments %>%
+  select(data_id, 
+         data_title,
+         data_stateProvinceRegion) %>%
+  glimpse()
+#> Rows: 13
+#> Columns: 3
+#> $ data_id                  <chr> "FDA-2009-N-0501-0002", "FDA-2009-N-0501-0003…
+#> $ data_title               <chr> "American Frozen Food Institute - Comment ", …
+#> $ data_stateProvinceRegion <chr> NA, "DC", "VA", NA, "DC", "DC", "DC", NA, NA,…
+```
+
+Of particular interest may be the `fileUrl` column, which allows us to
+download the text.
+
+For example, to download any attachments for the comments and place them
+in the directory `comments_FDA_2009_N_0501`, we can run
+
+``` r
+
+download_all(data_frame = comments, 
+             dest = "../comments_FDA_2009_N_0501", 
+             quiet = TRUE)
+```
+
+and to download the documents themselves to the directory
+`docs_FDA_2009_N_0501` we can run the following.
+
+``` r
+
+download_all(data_frame = documents, 
+             dest = "../docs_FDA_2009_N_0501", 
+             quiet = TRUE)
 ```

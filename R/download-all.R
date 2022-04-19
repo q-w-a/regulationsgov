@@ -20,7 +20,7 @@ utils::globalVariables("result")
 download_all <- function(data_frame, dest, format = NULL, ...) {
   # if data frame is provided, urls are in the fileUrl column
   if (is.data.frame(data_frame)) {
-    urls <- result[["fileUrl"]]
+    urls <- data_frame[["fileUrl"]]
   }
   # otherwise a character vector of file urls is provided
   else if (is.character(urls)) {
@@ -46,6 +46,8 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
   # vector, since some entries contain multiple urls
   urls <- strsplit(urls, ",") %>%
     unlist(use.names = FALSE)
+
+  urls <- urls[!is.na(urls)]
 
   # get only urls of the given formats with | operator
   if (!is.null(format)) {
