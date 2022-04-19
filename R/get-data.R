@@ -13,7 +13,10 @@
 #'}
 get_data <- function(url, df = FALSE) {
 
-  #resp <- httr::GET(url, config = config(ssl_verifypeer=FALSE))
+  # try insistently to get response for given url
+  # don't retry on errors 400, 403 since do not represent
+  # errors relating to too many requests, so the issue will
+  # not be resolved by retrying
   resp <- httr::RETRY(verb = "GET",
                       url = url,
                       config = config(ssl_verifypeer = FALSE),
@@ -22,6 +25,7 @@ get_data <- function(url, df = FALSE) {
                       pause_cap = 3010,
                       max_times = 50,
                       terminate_on = c(400,403))
+
   # check if type is as expected
   if (httr::http_type(resp) != "application/vnd.api+json") {
     httr::http_status(resp) %>%
@@ -29,6 +33,8 @@ get_data <- function(url, df = FALSE) {
       message()
     stop("API failed to return json", call. = FALSE)
   }
+
+  # display the specific information about the error
   else if (httr::http_error(resp)) {
     error_message <- httr::http_status(resp) %>%
       paste(collapse = "\n")
@@ -36,6 +42,7 @@ get_data <- function(url, df = FALSE) {
       call. = FALSE)
   }
 
+  # obtain content of request
   parsed <- jsonlite::fromJSON(
     httr::content(resp, "text"),
     simplifyVector = TRUE,
@@ -95,24 +102,19 @@ get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
 #' sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
 #' }
 iterate_over_pages <- function(url, quiet = TRUE) {
+
   first <- get_data_by_page(url, page_number = 1)
 
   if (!quiet) message("Number of Elements is: ",
                       first$meta$totalElements)
 
-  if (is.null(first$meta$totalElements)) {
-    pages <- first
-  }
-
-  else if (first$meta$totalElements <= 250) {
-    # all elements will be on the first page
+  if (is.null(first$meta$totalElements) || first$meta$totalElements <= 250) {
     pages <- first
   }
 
   else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000 ) {
     # since we can have 250 elements on each page, set number of pages to get all elements
     end <- floor(first$meta$totalElements /250) + 1
-    # print(end)
     pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url, quiet = quiet))
   }
   else{
@@ -139,7 +141,7 @@ get_all <- function(url, num_elements, quiet = TRUE) {
 
   n <- num_elements
 
-  # 20 pages, 250 elements per page
+  # 20 pages maximum, 250 elements per page
   iterations <- floor(n / (250*20)) + 1
 
   results <- map(1:20, ~get_data_by_page(page_number = .x,

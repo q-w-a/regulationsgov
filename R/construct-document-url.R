@@ -84,7 +84,10 @@ construct_document_url <- function(
 
   # retrieve key
   key <- check_auth(key)
+
+  # set base url
   base <- "https://api.regulations.gov/v4/documents"
+
   if (!is.null(documentId)) {
     # no need for multiple pages for single document
     url <- paste0(base, "/", documentId, "?api_key=", key)
@@ -95,10 +98,13 @@ construct_document_url <- function(
     }
   }
   else {
+    # collapse all arguments
     arguments <- map(names(arguments),
                      ~collapse_values(., arguments = arguments)) %>%
       unlist(recursive = FALSE)
+
     not_filt <- c("sort", "page_number", "page_size")
+
     filters <- unlist(arguments) %>%
       dplyr::as_tibble(rownames = "term") %>%
       dplyr::filter(term != "key") %>%
@@ -152,20 +158,19 @@ construct_document_url <- function(
 #'  \code{\link{construct_document_url}} function
 #' @keywords internal
  collapse_values <- function(x, arguments) {
+   # if argument is not a date, URLencode the arguments
+   # and paste together separated by commas
    if (!is.null(arguments[[x]]) &
        !(x %in% c("postedDate",
                   "lastModifiedDate"))) {
      args <- unlist(arguments[[x]])
      args <- tryCatch({
      args <- purrr::map_chr(args, ~as.character(.x) %>%
-                              URLencode(reserved=TRUE))
+                              URLencode(reserved = TRUE))
        },
         error = function(e) {
           return(args)})
      arguments[x] <- paste0(unlist(args), collapse = ',')
-     return(arguments[x])
    }
-  else {
     return(arguments[x])
-  }
  }

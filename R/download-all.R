@@ -13,28 +13,30 @@ utils::globalVariables("result")
 #' Paths can be relative or absolute.
 #' @param format a character vector of the file formats to download.
 #' The default is `NULL` in which case all files are downloaded.
-#' @param ... additional parameters to be passed to [utils::download.file()]
+#' @param ... additional parameters to be passed to [utils::download.file()].
+#' For example, `quiet = TRUE` can be used to suppress the messages produced
+#' by [utils::download.file()].
 #' @export
 download_all <- function(data_frame, dest, format = NULL, ...) {
-
+  # if data frame is provided, urls are in the fileUrl column
   if (is.data.frame(data_frame)) {
     urls <- result[["fileUrl"]]
   }
+  # otherwise a character vector of file urls is provided
   else if (is.character(urls)) {
     urls <- data_frame
   }
+  # throw error for invalid input
   else{
     stop("data_frame argument is in an invalid format. Supply a data frame or character
          vector containing the file urls.")
   }
-
   # add trailing / if not present
   if (substr(dest,
              nchar(dest),
              nchar(dest)) != "/") {
     dest <- paste0(dest, "/")
   }
-
   # create directory if it doesn't exist
   if (!dir.exists(dest)) {
     dir.create(dest)
@@ -45,6 +47,7 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
   urls <- strsplit(urls, ",") %>%
     unlist(use.names = FALSE)
 
+  # get only urls of the given formats with | operator
   if (!is.null(format)) {
     format <- paste0(format, collapse = "|")
     urls <- urls[grep(format, urls)]
@@ -53,7 +56,7 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
     }
   }
 
-  # split the urls by / to extract name
+  # split the urls by / to construct name for the file
   names <- strsplit(urls, "/")
 
   # create names for files based on ID and file format
@@ -63,7 +66,8 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
     paste0(l[(n-1):n],
          collapse = "_")})
 
-  # download files
+  # download files, passing any additional arguments to
+  # download.file
   purrr::pwalk(list(url =urls,
                    name =names),
               function(url, name) {

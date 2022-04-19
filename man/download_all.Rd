@@ -16,7 +16,9 @@ Paths can be relative or absolute.}
 \item{format}{a character vector of the file formats to download.
 The default is \code{NULL} in which case all files are downloaded.}
 
-\item{...}{additional parameters to be passed to \code{\link[utils:download.file]{utils::download.file()}}}
+\item{...}{additional parameters to be passed to \code{\link[utils:download.file]{utils::download.file()}}.
+For example, \code{quiet = TRUE} can be used to suppress the messages produced
+by \code{\link[utils:download.file]{utils::download.file()}}.}
 }
 \description{
 Download all the files corresponding to the given file URLS

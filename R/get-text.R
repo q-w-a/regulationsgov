@@ -18,6 +18,8 @@
 #' }
 add_text <- function(df, all = FALSE) {
   error <- ""
+  # additional packages are needed to run this function, so generate
+  # appropriate message to inform the user about packages they need to install
   if (!requireNamespace("textreadr", quietly = TRUE)) {
     error <- paste0(error, "Install \"textreadr\" to use this function.") }
   if (!requireNamespace("tesseract", quietly = TRUE)) {
@@ -30,7 +32,9 @@ add_text <- function(df, all = FALSE) {
   if (!"fileUrl" %in% names(df)) {
     stop("fileUrl is not a column in the data frame")
   }
+  # get text for each file url link
   text <- purrr::map_chr(df[,"fileUrl"], ~get_text(.x, all))
+  # add text column to data frame
   df <- cbind(df, text)
   return(df)
 }
@@ -43,20 +47,26 @@ add_text <- function(df, all = FALSE) {
 #' for further analysis.
 #' @keywords internal
 get_text <- function(link, all) {
+  # extract all urls from each component of character vector
+  # since some may contain multiple links separated by commas
   links <- strsplit(link, ",", fixed = TRUE) %>%
     unlist()
+
   if (length(links) == 1) {
     text <- extract_text(link)
   }
   else {
     if (all) {
+      # extract text for all links and collapse this text together
       text <- purrr::map_chr(links,
                              extract_text) %>%
         paste0(collapse = " ")
       message(class(text))
     }
     else {
+      # choose best file format
       link <- choose_element(links)
+      # extract text for that link
       text <- extract_text(link)
     }
   }
@@ -67,7 +77,7 @@ get_text <- function(link, all) {
 #' @param links character vector of links
 #' @keywords internal
 choose_element <- function(links) {
-
+  # choose with preference for docs or pdfs
   docs <- grepl("doc", links)
   pdfs <- grepl("pdf", links)
 
@@ -94,15 +104,17 @@ extract_text <- function(link) {
       text <- NA
     }
     else if (!(grepl("pdf", link, fixed = TRUE))) {
+      # read_document can handle multiple formats
       text <- textreadr::read_document(link,
                                        combine = TRUE)
     }
     else {
+      # read pdf with ocr = TRUE method
       text <- textreadr::read_pdf(link, ocr = TRUE)[,"text"] %>%
         paste0(collapse = " ")
     }
   },
-  error=function(e) {
+  error = function(e) {
     message("Attachments for ",
             link,
             " could not be obtained.")

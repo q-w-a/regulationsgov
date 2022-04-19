@@ -34,7 +34,7 @@
 #' }
 get_all_comments <- function(..., test = FALSE, key = NULL, quiet = TRUE) {
   key <- check_auth(key)
-  url <- construct_document_url(..., key)
+  url <- construct_document_url(..., key = key)
 
   if (!quiet) {
     message("URL constructed based on given arguments: ",
@@ -77,15 +77,20 @@ get_all_comments <- function(..., test = FALSE, key = NULL, quiet = TRUE) {
       continue <- check_continue(length(comment_links))
       if (!continue) return(NULL)
     }
+    # iterate with a delay of 7.2 seconds for each request to
+    # avoid hitting the 500 per hour rate limit
     extract_meta_slow <- purrr::slowly(extract_meta,
                                        rate = purrr::rate_delay(7.2))
   }
   else {
+    # if there are less than 500 links the function does not need
+    # to be slowed down
     extract_meta_slow <- extract_meta
   }
 
   # retrieve the comment metadata, including download links, for all comments
-  r <- map(comment_links, ~{if (!quiet) message(.x); extract_meta_slow(.x, key = key);})
+  r <- map(comment_links, ~{if (!quiet) message(.x);
+    extract_meta_slow(.x, key = key);})
 
   result <- tryCatch(
     bind_rows(r),
@@ -113,6 +118,7 @@ check_continue <-  function(num_elements) {
                     "\nthis will take ",
                     num_elements/500,
                     " hours to complete.")
+
   response <- readline(prompt = "Do you want to continue (Y/N)? ")
 
   if (tolower(response) %in% c("y", "yes")) {

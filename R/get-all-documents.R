@@ -29,6 +29,8 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
     documentId <- documents$data$id
   }
 
+  # if there are more than 500 links, slow the iteration to
+  # avoid hitting the rate limit
   if (length(documentId) > 500) {
     if (interactive()) {
       continue <- check_continue(length(documentId))
@@ -37,18 +39,20 @@ get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
     extract_meta_slow <- purrr::slowly(extract_meta,
                                        rate = purrr::rate_delay(7.2))
   }
+  # otherwise iterate at the normal speed
   else {
     extract_meta_slow <- extract_meta
   }
 
+  # obtain information for all document IDs
   documents <- map(documentId,
                    ~paste0("https://api.regulations.gov/v4/documents/",
                            .x) %>%
                      extract_meta_slow(key = key))
 
+  # bind rows for all individual documents into one data frame
   result <- tryCatch( {
     bind_rows(documents)
-
     },
     error = function(e) {
       documents <- map(documents, ~mutate(.x,
