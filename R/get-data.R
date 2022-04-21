@@ -5,13 +5,14 @@
 #' @param url a url containing a valid API call
 #' @param df logical, \code{TRUE} if you want the output as a data frame.
 #' Default value is \code{FALSE}
+#' @param ... additional arguments to pass to [httr::RETRY()]
 #' @importFrom httr config GET
 #' @export
 #' @examples
 #'\dontrun{
 #'get_data("https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&api_key=DEMO_KEY")
 #'}
-get_data <- function(url, df = FALSE) {
+get_data <- function(url, df = FALSE, ...) {
 
   # try insistently to get response for given url
   # don't retry on errors 400, 403 since do not represent
@@ -24,7 +25,8 @@ get_data <- function(url, df = FALSE) {
                       pause_base = 2,
                       pause_cap = 3010,
                       max_times = 50,
-                      terminate_on = c(400,403))
+                      terminate_on = c(400,403),
+                      ...)
 
   # check if type is as expected
   if (httr::http_type(resp) != "application/vnd.api+json") {
@@ -70,12 +72,13 @@ get_data <- function(url, df = FALSE) {
 #' filter[docketId]=CMS-2014-0063&page[size]=250&page[number]=1&api_key=DEMO_KEY",
 #' page_number = 2)
 #' }
+#' @keywords internal
 get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
   # set page number to given page
   for_page <- paste0("page[number]=", page_number, "&")
   url_for_page <- gsub("page\\[number\\]=[0-9]+&", for_page, url, perl = TRUE)
   if (!quiet) message("Page ", page_number, ": ", url_for_page)
-  get_data(url_for_page)
+  get_data(url_for_page, quiet = quiet)
 }
 
 
@@ -101,9 +104,10 @@ get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
 #' [commentOnId]=09000064816e1a41&page[size]=250&page[number]=1&
 #' sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
 #' }
+#' @keywords internal
 iterate_over_pages <- function(url, quiet = TRUE) {
 
-  first <- get_data_by_page(url, page_number = 1)
+  first <- get_data_by_page(url, page_number = 1, quiet = quiet)
 
   if (!quiet) message("Number of Elements is: ",
                       first$meta$totalElements)
@@ -137,6 +141,7 @@ iterate_over_pages <- function(url, quiet = TRUE) {
 #' @param num_elements number of elements associated with the given `url` (totalElements)
 #' @param quiet logical; FALSE if you want the urls to be printed as this function iterates. Default value is
 #' TRUE, where the urls are not printed to the console.
+#' @keywords internal
 get_all <- function(url, num_elements, quiet = TRUE) {
 
   n <- num_elements
@@ -145,7 +150,8 @@ get_all <- function(url, num_elements, quiet = TRUE) {
   iterations <- floor(n / (250*20)) + 1
 
   results <- map(1:20, ~get_data_by_page(page_number = .x,
-                                            url = url)$data)
+                                            url = url,
+                                         quiet = quiet)$data)
   # extract the date in the last element
   last_date <- find_element(results[[20]],
                             "lastModifiedDate") %>%
@@ -170,7 +176,8 @@ get_all <- function(url, num_elements, quiet = TRUE) {
     if (!quiet) message(new_url)
 
     pages <- map(1:20, ~get_data_by_page(page_number = .x,
-                                           url = new_url)$data)
+                                           url = new_url,
+                                         quiet = quiet)$data)
 
     last_date <- find_element(pages[[20]],
                               "lastModifiedDate") %>%
@@ -188,6 +195,7 @@ get_all <- function(url, num_elements, quiet = TRUE) {
 #' Convert Date of the form '2020-07-22T18:28:40Z' to Eastern Time
 #' @param date of the form '2020-07-22T18:27:52Z'
 #' @return date of the form '2020-07-22 14:28:40'
+#' @keywords internal
 convert_time <- function(date) {
   date <- gsub("T", " ", date)
   time <- strptime(date,
@@ -213,6 +221,8 @@ convert_time <- function(date) {
 #'
 #' @return a data frame of 1 row, where each column represents
 #' data a field of information from the nested list.
+#'
+#' @keywords internal
 convert_df <- function(parsed_data) {
 
   if (!is.data.frame(parsed_data)) {

@@ -16,7 +16,7 @@ library(regulationsgov)
 ```
 
 
-# regulationsgov
+# regulationsgov <img src="man/figures/logo.png" align="right" height="139" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/q-w-a/regulationsgov/workflows/R-CMD-check/badge.svg)](https://github.com/q-w-a/regulationsgov/actions)

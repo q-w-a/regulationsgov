@@ -101,16 +101,16 @@ choose_element <- function(links) {
 extract_text <- function(link) {
   tryCatch( {
     if (is.na(link)) {
-      text <- NA
+      txt <- NA
     }
     else if (!(grepl("pdf", link, fixed = TRUE))) {
       # read_document can handle multiple formats
-      text <- textreadr::read_document(link,
+      txt <- textreadr::read_document(link,
                                        combine = TRUE)
     }
     else {
       # read pdf with ocr = TRUE method
-      text <- textreadr::read_pdf(link, ocr = TRUE)[,"text"] %>%
+      txt <- textreadr::read_pdf(link, ocr = TRUE)[,"text"] %>%
         paste0(collapse = " ")
     }
   },
@@ -118,13 +118,13 @@ extract_text <- function(link) {
     message("Attachments for ",
             link,
             " could not be obtained.")
-    text <- NA
+    txt <<- NA
   })
-  if (is.null(text)) {
+  if (is.null(txt)) {
     return(NA)
   }
   else {
-    return(text)
+    return(txt)
   }
 }
 

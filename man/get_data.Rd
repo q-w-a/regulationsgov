@@ -4,13 +4,15 @@
 \alias{get_data}
 \title{Acquire Data for the Given Url}
 \usage{
-get_data(url, df = FALSE)
+get_data(url, df = FALSE, ...)
 }
 \arguments{
 \item{url}{a url containing a valid API call}
 
 \item{df}{logical, \code{TRUE} if you want the output as a data frame.
 Default value is \code{FALSE}}
+
+\item{...}{additional arguments to pass to \code{\link[httr:RETRY]{httr::RETRY()}}}
 }
 \description{
 Acquire Data for the Given Url

@@ -19,3 +19,4 @@ This function is for use with the \code{df=TRUE} argument with
 \code{\link{get_data}}. It converts the nested list containing
 the data into a data frame.
 }
+\keyword{internal}

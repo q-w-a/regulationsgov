@@ -20,3 +20,4 @@ TRUE, where the urls are not printed to the console.}
 This function uses the procedure outlined \href{https://open.gsa.gov/api/regulationsgov/#searching-for-documents}{here} under the section
 \emph{Retrieve all comments for a docket where number of comments is greater than 5000}
 }
+\keyword{internal}
