@@ -99,7 +99,7 @@ library(dplyr)
 documents <- regulationsgov::get_all_documents(docketId ="FDA-2009-N-0501")
 
 
-glimpse(documents)
+str(documents)
 
 ```
 
@@ -117,7 +117,7 @@ comments %>%
   select(data_id, 
          data_title,
          data_stateProvinceRegion) %>%
-  glimpse()
+  str()
 
 ```
 
@@ -144,4 +144,20 @@ download_all(data_frame = documents,
 
 
 ```
+
+If we don't want to download the text but instead want the text included in the data frame, you can use the `add_text` function. This function adds a column `text` where each entry contains all the processed text from any attachments for that document or comment.
+
+```{r}
+
+comments <- add_text(comments)
+
+comments %>%
+  select(data_id, 
+         data_comment,
+         text) %>%
+  str()
+
+
+```
+
 
