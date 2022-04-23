@@ -1,4 +1,6 @@
 
+utils::globalVariables(c("term", "value", "filt"))
+
 #' Create a URL for the Documents Endpoint
 #'
 #' Takes the parameters available for the documents endpoint of the regulations.gov API, as
@@ -48,13 +50,12 @@
 #' are between 5 and 250. The default value is 250.
 #' @export
 #' @examples
-#' \dontrun{
 #' url <- construct_document_url(agencyId = c("CMS", "EPA"),
 #' postedDate = c("2020-02-02", "2020-10-02"),
 #' key = "DEMO_KEY")
 #' url <- construct_document_url(documentId = "CMS-2014-0063-0001",
 #' attachments = "true",
-#' key = "DEMO_KEY")}
+#' key = "DEMO_KEY")
 construct_document_url <- function(
   key = NULL,
   documentId = NULL,
@@ -99,50 +100,7 @@ construct_document_url <- function(
   }
   else {
     # collapse all arguments
-    arguments <- map(names(arguments),
-                     ~collapse_values(., arguments = arguments)) %>%
-      unlist(recursive = FALSE)
-
-    not_filt <- c("sort", "page_number", "page_size")
-
-    filters <- unlist(arguments) %>%
-      dplyr::as_tibble(rownames = "term") %>%
-      dplyr::filter(term != "key") %>%
-      # order terms so sort term is last
-      dplyr::mutate(term = factor(term,
-                                  levels = c(.data$term[!term == "sort"],
-                                             "sort"))) %>%
-      dplyr::arrange(term) %>%
-      mutate(filt = ifelse(!(term %in% not_filt),
-                           paste0("filter[", term, "]=", value),
-                           paste0(term, "=", value)),
-             filt =  gsub( "page_size",
-                           "page[size]",
-                           filt,
-                           fixed = TRUE),
-             filt = gsub("page_number",
-                         "page[number]",
-                         filt,
-                         fixed = TRUE),
-             filt = gsub("[postedDate1]",
-                         "[postedDate][ge]",
-                         filt,
-                         fixed = TRUE),
-             filt = gsub("[postedDate2]",
-                         "[postedDate][le]",
-                         filt,
-                         fixed = TRUE),
-             filt = gsub("[lastModifiedDate1]",
-                         "[lastModifiedDate][ge]",
-                         filt,
-                         fixed = TRUE),
-             filt = gsub("[lastModifiedDate2]",
-                         "[lastModifiedDate][le]",
-                         filt,
-                         fixed = TRUE)) %>%
-      dplyr::pull(filt) %>%
-      paste0(collapse="&")
-    url <- paste0(base, "?", filters, "&api_key=", key)
+    url <- make_url(arguments, base, key)
   }
   return(url)
 }

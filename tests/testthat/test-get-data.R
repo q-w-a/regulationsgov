@@ -37,6 +37,15 @@ test_that("get_data produces expected output for documents endpoint", {
 
 })
 
+test_that("get_data produces expected message when no data can be retrieved", {
+  url <- construct_comment_url(agencyId = "CMS",
+                               lastModifiedDate = c("2019-02-02 12:00:00",
+                                                    "2019-02-02 14:00:00"),
+                               sort = "documentId", key = "DEMO_KEY")
+  expect_message(get_data(url, df = TRUE), "No data available for the given url.")
+
+})
+
 
 
 test_that("get_data produces expected output for comments endpoint", {

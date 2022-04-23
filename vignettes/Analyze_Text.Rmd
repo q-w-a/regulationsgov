@@ -18,16 +18,16 @@ knitr::opts_chunk$set(
 
 In this vignette, we demonstrate a potential use of the `regulationsgov` package. First, using functionality from this package, we obtain all comments and documents associated with a specific docket, including the text of any attachments. Then, we explore how the `tidytext` and `widyr` packages enable us to explore these texts.
 
-```{r setup}
+```{r setup, message = FALSE}
 library(regulationsgov)
 library(dplyr)
 ```
 
 ## Obtaining the Documents and Comments Text for Docket 
 
-If you are interested in analyzing the text of any legal document on [regulations.gov](https://www.regulations.gov/), you can obtain the document download files using the function `get_all_documents` and providing the docket ID.
+If you are interested in analyzing the text of any legal document on [regulations.gov](https://www.regulations.gov/), you can obtain the document metadata and download links using the function `get_all_documents`. A common use might be obtaining all the documents associated with a particular docket ID, as we show below.
 
-Here, we show an example of obtaining the documents and comments associated with docket ID [FAA-2018-1084](https://www.regulations.gov/docket/FAA-2018-1084). Note that if you have not set up your [API key](https://open.gsa.gov/api/regulationsgov/) with the function `set_datagov_key`, you can provide your key with the `key` argument to the `get_all_documents` and `get_all_comments` functions.
+Here, we obtain the documents and comments associated with docket ID [FAA-2018-1084](https://www.regulations.gov/docket/FAA-2018-1084). Note that if you have not set up your [API key](https://open.gsa.gov/api/regulationsgov/) with the function `set_datagov_key`, you can provide your key with the `key` argument to the `get_all_documents` and `get_all_comments` functions.
 
 ```{r}
 
@@ -45,18 +45,18 @@ After running the previous lines, `documents` will be a data frame with informat
 ```{r}
 
 documents %>% 
-  select(contains(c("id", 
-                  "documentType",
-                  "subtype", 
-                  "postedDate",
-                  "openForComment"))) %>% 
-  glimpse()
-  
+  select("data_id", 
+         contains(c("documentType",
+                     "subtype", 
+                     "postedDate",
+                     "openForComment"))) %>% 
+  str()
+
 
 
 ```
 
-The comments data frame will contain all comments corresponding to the docket `FAA-2018-1084`. Each row corresponds to a single comment ID; as we see below, there are 418 comments corresponding to this docket. We can verify this information here [here](https://www.regulations.gov/docket/FAA-2018-1084). The columns of this data frame will be different than the documents data frame. A few of these columns are shown below.
+The comments data frame will contain all comments corresponding to the docket `FAA-2018-1084`. Each row corresponds to a single comment ID; as we see below, there are 418 comments corresponding to this docket. We can verify this information [here](https://www.regulations.gov/docket/FAA-2018-1084). The columns of this data frame will be different than the documents data frame because the associated metadata is different. A few of these columns are shown below.
 
 
 ```{r}
@@ -65,11 +65,12 @@ The comments data frame will contain all comments corresponding to the docket `F
 nrow(comments)
 
 comments %>% 
-  select(contains(c("data_id",
-                  "city",
-                  "stateProvinceRegion", 
-                  "organization",
-                  "fileUrl"))) %>% glimpse()
+  select("data_id",
+         contains(c( "city",
+                     "stateProvinceRegion", 
+                     "organization",
+                     "fileUrl"))) %>% 
+  str()
 
 ```
 
@@ -87,7 +88,7 @@ download_all(data_frame = documents,
 
 ```
 
-However, for textual analysis, you may be more interested in reading the text into R *without* downloading the files. 
+However, for textual analysis, you may be more interested in reading the text into R *without* downloading the files in their original form. 
 
 For this purpose, we can use the `add_text()` function. This function processes the text from the download column without downloading these files to your computer, although the processing of pdfs involves the temporary creation of png files. It returns a data frame containing all the original columns as well as a `text` column that contains the text of any attachments.
 
@@ -95,7 +96,7 @@ Here, we add the text to the data frames for both the `comments` and the `docume
 
 
 
-```{r}
+```{r, message = FALSE, results = 'hide'}
 
 
 # add the text of the documents themselves
@@ -128,6 +129,8 @@ comments <- comments %>%
 
 
 ```
+
+
 
 ## Exploratory Analysis of the Text
 
@@ -177,9 +180,9 @@ documents_cleaned <- documents %>%
                 input = text, 
                 token = "words",
                 to_lower = TRUE) %>% 
-  mutate( word = str_replace_all(word, 
-                                "[[:punct:][:digit:][:cntrl:]]", 
-                                " ")) %>% 
+  mutate( word = gsub("[[:punct:][:digit:][:cntrl:]]", 
+                                " ", 
+                      word)) %>% 
   filter(word != "") %>%
   anti_join(tidytext::stop_words, 
             by = c("word" = "word")) 
@@ -198,9 +201,9 @@ comments_cleaned <- comments  %>%
                 input = text, 
                 token = "words",
                 to_lower = TRUE) %>% 
-  mutate( word = str_replace_all(word, 
-                                "[[:punct:][:digit:][:cntrl:]]", 
-                                " ")) %>% 
+  mutate(word = gsub("[[:punct:][:digit:][:cntrl:]]", 
+                                " ", 
+                      word)) %>% 
   filter(word != "") %>%
   anti_join(tidytext::stop_words, 
             by = c("word" = "word")) 
@@ -212,7 +215,7 @@ comments_cleaned %>%
 
 From here, we can easily make plots to explore the frequency of words across our texts. It might be useful to get a quick look at the most frequent words in the documents and comments associated with docket FAA-2018-1084.
 
-```{r,  fig.show="hold", out.width="50%"}
+```{r,  fig.show="hold", out.width="40%", fig.asp = .6}
 
 
 documents_cleaned %>%
@@ -248,7 +251,7 @@ comments_cleaned %>%
 Rather than looking at the most frequent individual words in the documents and comments associated with docket FAA-2018-1084, we can also look at $n$-grams, that is, clusters of words of length $n$. We can do this with the `unnest_tokens` function by supplying the   `token = "ngrams"` arguments and specifying $n$ with the argument `n = 2`.
 
 
-```{r, fig.show="hold", out.width="50%"}
+```{r, fig.show='hold', out.width='40%', fig.asp = .6}
 
 #### FOR DOCUMENTS 
 
@@ -313,7 +316,7 @@ comments_bigrams %>%
 
 ### Exploring Word Correlations
 
-The `widyr` package is particularly convenient for working with correlations. Since we only have two documents, it doesn't really make calculate correlations across documents. Here, we use `filter(n() >= 30)` to filter for words appearing more than 30 times, before calculating the pairwise correlation with the `widyr` function `pairwise_cor`. 
+The `widyr` package is particularly convenient for working with correlations. Since we only have two documents, it doesn't really make calculate correlations across documents. Thus, here we only look into correlations in words across comments. Here, we use `filter(n() >= 30)` to filter for words appearing more than 30 times, before calculating the pairwise correlation with the `widyr` function `pairwise_cor`. 
 
 ```{r, warning = FALSE}
 
@@ -339,7 +342,7 @@ You might be interested in studying the words most highly correlated with a few 
 
 We can do this by filtering for these terms, as follows. Note that we obtain the most highly correlated words for each word by first grouping by the second word and then using the `dplyr` function `slicemax`. Then we arrange and create an order variable that represents the row number to enable us to plot the words in ascending order for each facet.
 
-```{r}
+```{r, out.width='100%'}
 
 
 

@@ -87,11 +87,10 @@ the regulations.gov search function and go to a \href{https://www.regulations.go
 or \href{https://www.regulations.gov/document/CMS-2014-0063-0001}{document} and look at the details section.
 }
 \examples{
-\dontrun{
 url <- construct_document_url(agencyId = c("CMS", "EPA"),
 postedDate = c("2020-02-02", "2020-10-02"),
 key = "DEMO_KEY")
 url <- construct_document_url(documentId = "CMS-2014-0063-0001",
 attachments = "true",
-key = "DEMO_KEY")}
+key = "DEMO_KEY")
 }

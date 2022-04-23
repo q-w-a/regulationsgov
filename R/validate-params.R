@@ -15,9 +15,14 @@ validate_params <- function(arg_list) {
   err <- ""
 
   # check there is only one documentId
-  if (length(arg_list[["documentId"]]) > 1) {
-    err <- paste0(err,
-                  "\ndocumentId only accepts one documentId")
+  if (!is.null(arg_list[["documentId"]])) {
+    if (length(arg_list[["documentId"]]) > 1) {
+      err <- paste0(err,
+                    "\ndocumentId only accepts one documentId")
+    }
+    # check no invalid arguments are provided
+    res <- check_non_id(arg_list, "documentId")
+    if (!is.null(res)) err <- paste0(err, res)
   }
 
   # check that attachments is NULL or 'true'
@@ -28,7 +33,7 @@ validate_params <- function(arg_list) {
 
   # check commentEndDate is less than or equal to length 2 and dates are of the correct format
   if (!is.null(arg_list[["commentEndDate"]])) {
-    err <- paste0(check_date(arg_list[["commentEndDate"]],
+    err <- paste0(err, check_date(arg_list[["commentEndDate"]],
                              "commentEndDate"))
   }
 
@@ -54,13 +59,13 @@ validate_params <- function(arg_list) {
 
   # check postedDate is less than or equal to length 2 and dates are of the correct format
   if (!is.null(arg_list[["postedDate"]])) {
-    err <- paste0(check_date(arg_list[["postedDate"]],
+    err <- paste0(err, check_date(arg_list[["postedDate"]],
                              "postedDate"))
   }
 
   # check lastModifiedDate is less than or equal to length 2 and dates are of the correct format
   if (!is.null(arg_list[["lastModifiedDate"]])) {
-    err <- paste0(check_date(arg_list[["lastModifiedDate"]],
+    err <- paste0(err, check_date(arg_list[["lastModifiedDate"]],
                              "lastModifiedDate"))
   }
 
@@ -69,7 +74,6 @@ validate_params <- function(arg_list) {
     err <- paste0(err,
                   "withinCommentPeriod must be 'true' or NULL")
   }
-
 
   # check sort is one or more of accepted values
   if (!is.null(arg_list[["sort"]])) {
@@ -83,7 +87,8 @@ validate_params <- function(arg_list) {
     if (any(invalid)) {
       err <- paste0(err,
                     '\nonly can sort by one or more of the following:\n',
-                    '"commentEndDate, "postedDate", "lastModifiedDate", "documentId", "title"',
+                    '"commentEndDate, "postedDate",
+                    "lastModifiedDate", "documentId", "title"',
                     "\nCheck Entries: ",
                     paste0(arg_list[["sort"]][invalid],
                            collapse = ", "))
@@ -114,7 +119,7 @@ check_date <- function(dates, param) {
   }
 
   if (param != "lastModifiedDate") {
-    invalid <- !grepl("\\d\\d\\d\\d-\\d\\d-\\d\\d",
+    invalid <- !grepl("^\\d\\d\\d\\d-\\d\\d-\\d\\d$",
                       dates)
     if (any(invalid)) {
       err <- paste0(err,

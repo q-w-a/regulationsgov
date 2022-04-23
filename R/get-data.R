@@ -5,6 +5,9 @@
 #' @param url a url containing a valid API call
 #' @param df logical, \code{TRUE} if you want the output as a data frame.
 #' Default value is \code{FALSE}
+#' @param quiet logical with default `TRUE`, passed to [httr::RETRY()].
+#' If `TRUE` this function does not print messages when [httr::RETRY()] has
+#' to retry getting a request due to hitting a rate limit.
 #' @param ... additional arguments to pass to [httr::RETRY()]
 #' @importFrom httr config GET
 #' @export
@@ -12,7 +15,7 @@
 #'\dontrun{
 #'get_data("https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&api_key=DEMO_KEY")
 #'}
-get_data <- function(url, df = FALSE, ...) {
+get_data <- function(url, df = FALSE, quiet = TRUE,...) {
 
   # try insistently to get response for given url
   # don't retry on errors 400, 403 since do not represent
@@ -26,6 +29,7 @@ get_data <- function(url, df = FALSE, ...) {
                       pause_cap = 3010,
                       max_times = 50,
                       terminate_on = c(400,403),
+                      quiet = quiet,
                       ...)
 
   # check if type is as expected
@@ -224,8 +228,11 @@ convert_time <- function(date) {
 #'
 #' @keywords internal
 convert_df <- function(parsed_data) {
-
-  if (!is.data.frame(parsed_data)) {
+  if (purrr::is_empty(parsed_data)) {
+    message("No data available for the given url.")
+    return(NULL)
+  }
+  else if (!is.data.frame(parsed_data)) {
 
   parsed_data <- parsed_data %>%
       unlist(recursive = FALSE) %>%

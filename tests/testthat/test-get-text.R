@@ -1,7 +1,7 @@
 
 
 test_that("add text works as expected", {
-  skip_if_no_key()
+  skip("Only run if key is available & user has installed textreadr and tesseract")
   comment_metadata <- get_all_comments(docketId="CMS-2014-0063",
                                        test = TRUE)
   text <- add_text(comment_metadata)
@@ -9,7 +9,7 @@ test_that("add text works as expected", {
 })
 
 test_that("get_text chooses desired element when all=FALSE", {
-
+  skip("Only run if key is available & user has installed textreadr and tesseract")
   text <- extract_text("https://downloads.regulations.gov/FAA-2018-1084-0130/attachment_1.docx")
   expect_equal(text, "I believe this is a Great rule.")
 
@@ -23,6 +23,7 @@ test_that("get_text chooses desired element when all=FALSE", {
 })
 
 test_that("choose_element chooses the correct element", {
+  skip("Only run if key is available & user has installed textreadr and tesseract")
   links <- c("https://downloads.regulations.gov/FAA-2018-1084-0130/attachment_1.docx",
     "https://downloads.regulations.gov/FAA-2018-1084-0130/attachment_1.pdf" )
   link <- choose_element(links)
@@ -31,7 +32,7 @@ test_that("choose_element chooses the correct element", {
 
 
 test_that("extract_text works as expected for invalid argument", {
-
+  skip("Only run if key is available & user has installed textreadr and tesseract")
   # returns NA when invalid url provided
   invalid <- extract_text(NA)
   expect_true(is.na(invalid))
@@ -54,6 +55,7 @@ test_that("add_text works as expected with all = TRUE", {
 })
 
 test_that("add_text works with document data", {
+  skip("Only run if key is available & user has installed textreadr and tesseract")
   skip_if_no_key()
   result <- get_all_documents(docketId ="FDA-2009-N-0501")
   text <- add_text(result)

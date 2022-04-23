@@ -77,12 +77,16 @@ get_text <- function(link, all) {
 #' @param links character vector of links
 #' @keywords internal
 choose_element <- function(links) {
-  # choose with preference for docs or pdfs
+  # choose with preference for doc, htm, or pdf files
   docs <- grepl("doc", links)
   pdfs <- grepl("pdf", links)
+  htm <- grepl("htm", links)
 
   if (any(docs)) {
     link <- links[which(docs)][1]
+  }
+  else if (any(htm)) {
+    link <- links[which(htm)][1]
   }
   else if (any(pdfs)) {
     link <- links[which(pdfs)][1]

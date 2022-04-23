@@ -94,10 +94,9 @@ test_that("collapsing multiple arguments works for construct_document_url", {
 })
 
 
-test_that("construct_document_url ignores docketId if documentId is provided", {
-  url <- construct_document_url(documentId = "NIH-2007-0930-0001",
+test_that("construct_document_url throws error if docketId and documentId are provided", {
+  expect_error(construct_document_url(documentId = "NIH-2007-0930-0001",
                          docketId = "NIH-2007-0930",
-                         key = "DEMO_KEY")
-  expect_equal(url, "https://api.regulations.gov/v4/documents/NIH-2007-0930-0001?api_key=DEMO_KEY")
+                         key = "DEMO_KEY"), "the only other argument")
 })
 
