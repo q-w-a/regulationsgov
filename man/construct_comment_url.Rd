@@ -57,12 +57,12 @@ output is on multiple pages. Valid values are between 1 and 20. Default value is
 are between 5 and 250. The default value is 250.}
 }
 \description{
-Takes the parameters available for the documents endpoint of the regulations.gov API, as
-described \href{https://open.gsa.gov/api/regulationsgov/#searching-for-documents}{here} under the
-documents section under API calls, and constructs a URL that can be used to retrieve the
+Takes the parameters available for the comments endpoint of the regulations.gov API, as
+described \href{https://open.gsa.gov/api/regulationsgov/}{here} under the
+comments section under API calls, and constructs a URL that can be used to retrieve the
 data specified. To understand how these parameters relate to the data, it may help to go the
 the regulations.gov search function and go to a \href{https://www.regulations.gov/docket/CMS-2014-0063}{specific docket}
-or \href{https://www.regulations.gov/document/CMS-2014-0063-0001}{document} and look at the details section.
+or \href{https://www.regulations.gov/document/CMS-2014-0063-0001}{document} and look at the associated comments.
 }
 \examples{
 construct_comment_url(agencyId = c("CMS", "EPA"),

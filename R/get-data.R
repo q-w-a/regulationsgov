@@ -123,12 +123,11 @@ iterate_over_pages <- function(url, quiet = TRUE) {
   else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000 ) {
     # since we can have 250 elements on each page, set number of pages to get all elements
     end <- floor(first$meta$totalElements /250) + 1
-    pages <- map(1:end, ~get_data_by_page(page_number = .x, url=url, quiet = quiet))
+    pages <- map(1:end, ~get_data_by_page(page_number = .x, url = url, quiet = quiet))
   }
   else{
     message("There are ", first$meta$totalElements,
-            " comments. The time for this request for detailed information is expected to be at least ",
-            (first$meta$totalElements/500), " hours.")
+            " comments. ")
     pages <- get_all(url, first$meta$totalElements, quiet = quiet)
   }
   return(pages)

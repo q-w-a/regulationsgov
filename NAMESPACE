@@ -2,6 +2,7 @@
 
 export(add_text)
 export(construct_comment_url)
+export(construct_docket_url)
 export(construct_document_url)
 export(download_all)
 export(find_element)

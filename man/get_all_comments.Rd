@@ -4,12 +4,16 @@
 \alias{get_all_comments}
 \title{Get All Comments for a Specific Docket or Document}
 \usage{
-get_all_comments(..., test = FALSE, key = NULL, quiet = TRUE)
+get_all_comments(endpoint, ..., key = NULL, quiet = TRUE, test = FALSE)
 }
 \arguments{
-\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}}.}
+\item{endpoint}{which endpoint you want the url to be based on. The
+options are "document", "comment", and "docket". Note that this will be
+the endpoint your parameters will be applied to (e.g. the posted date of
+the comment versus the posted date of the document).}
 
-\item{test}{logical; to test if the output is as expected without using up many API calls.}
+\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}},
+\code{\link[=construct_comment_url]{construct_comment_url()}},  \code{\link[=construct_docket_url]{construct_docket_url()}}.}
 
 \item{key}{the API key passed in the function call; this may be NULL if the user has
 chosen to set up the key as an environmental variable instead with the function
@@ -19,6 +23,8 @@ chosen to set up the key as an environmental variable instead with the function
 acquires detailed information for each comment. This is recommended if you are obtaining
 more than 500 comments, since this call will take over an hour to run due to rate
 limits for the API.}
+
+\item{test}{logical; to test if the output is as expected without using up many API calls.}
 }
 \value{
 a data frame containing the comment metadata, including the download links
@@ -32,15 +38,17 @@ or docket ID as multiple API calls will be necessary.
 \examples{
 \dontrun{
 # retrieve all comments for docket CMS-2014-0063
-comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063", test = TRUE)
+comments_CMS_2014_0063 <- get_all_comments(endpoint = "document",
+docketId = "CMS-2014-0063", test = TRUE)
 
 # retrieve all comments for document NIH-2007-0930-0001
-comment_metadata <- get_all_comments(documentId="NIH-2007-0930-0001")
+comment_metadata <- get_all_comments(endpoint = "document",
+documentId="NIH-2007-0930-0001")
 
 # retrieve all comments for documents last modified between 2021-04-01 12:00:00 and
 2021-04-02 12:00:00 with search term 'privacy'
-comments <- get_all_comments(lastModifiedDate =
-c("2021-04-01 12:00:00", "2021-04-02 12:00:00"),
+comments <- get_all_comments(endpoint = "document",
+lastModifiedDate = c("2021-04-01 12:00:00", "2021-04-02 12:00:00"),
 quiet = FALSE, searchTerm = "privacy")
 }
 }

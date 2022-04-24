@@ -2,12 +2,12 @@ utils::globalVariables(c("term", "value", "filt"))
 
 #' Create a URL for the Comments Endpoint
 #'
-#' Takes the parameters available for the documents endpoint of the regulations.gov API, as
-#' described [here](https://open.gsa.gov/api/regulationsgov/#searching-for-documents) under the
-#' documents section under API calls, and constructs a URL that can be used to retrieve the
+#' Takes the parameters available for the comments endpoint of the regulations.gov API, as
+#' described [here](https://open.gsa.gov/api/regulationsgov/) under the
+#' comments section under API calls, and constructs a URL that can be used to retrieve the
 #' data specified. To understand how these parameters relate to the data, it may help to go the
 #' the regulations.gov search function and go to a [specific docket](https://www.regulations.gov/docket/CMS-2014-0063)
-#' or [document](https://www.regulations.gov/document/CMS-2014-0063-0001) and look at the details section.
+#' or [document](https://www.regulations.gov/document/CMS-2014-0063-0001) and look at the associated comments.
 #'
 #' @param key the API key passed in the function call; this may be NULL if the user has
 #'   chosen to set up the key as an environmental variable instead with the function

@@ -23,7 +23,6 @@ Config/testthat/edition: 3
 Imports: 
     jsonlite,
     dplyr,
-    magrittr,
     purrr,
     httr,
     rlang,

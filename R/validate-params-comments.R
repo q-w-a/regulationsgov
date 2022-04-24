@@ -2,9 +2,9 @@ globalVariables(c("arg"))
 
 
 
-#' Validate the Parameters Passed to the construct_document_url Function
+#' Validate the Parameters Passed to the `construct_comments_url` Function
 #'
-#' Ensure the arguments the construct_document_url function receives
+#' Ensure the arguments the `construct_comments_url` function receives
 #' aren't invalid. This helps to prevent making failed API calls.
 #'
 #' @param arg_list named list containing arguments to the [construct_comment_url()] function.

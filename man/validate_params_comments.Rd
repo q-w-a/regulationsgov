@@ -2,7 +2,7 @@
 % Please edit documentation in R/validate-params-comments.R
 \name{validate_params_comments}
 \alias{validate_params_comments}
-\title{Validate the Parameters Passed to the construct_document_url Function}
+\title{Validate the Parameters Passed to the \code{construct_comments_url} Function}
 \usage{
 validate_params_comments(arg_list)
 }
@@ -10,7 +10,7 @@ validate_params_comments(arg_list)
 \item{arg_list}{named list containing arguments to the \code{\link[=construct_comment_url]{construct_comment_url()}} function.}
 }
 \description{
-Ensure the arguments the construct_document_url function receives
+Ensure the arguments the \code{construct_comments_url} function receives
 aren't invalid. This helps to prevent making failed API calls.
 }
 \keyword{internal}
