@@ -158,7 +158,7 @@ documents$meta$totalElements
 
 We can then obtain comments for these documents.
 
-Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were `r documents$meta$totalElements ` this means many of the documents associated with these dockets did not have any comments associated with them. 
+Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were `r documents$meta$totalElements ` documents this means many of the documents associated with these dockets did not have any comments associated with them. 
 
 ```{r}
 
