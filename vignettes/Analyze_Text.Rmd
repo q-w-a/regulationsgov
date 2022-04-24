@@ -27,14 +27,16 @@ library(dplyr)
 
 If you are interested in analyzing the text of any legal document on [regulations.gov](https://www.regulations.gov/), you can obtain the document metadata and download links using the function `get_all_documents`. A common use might be obtaining all the documents associated with a particular docket ID, as we show below.
 
-Here, we obtain the documents and comments associated with docket ID [FAA-2018-1084](https://www.regulations.gov/docket/FAA-2018-1084). Note that if you have not set up your [API key](https://open.gsa.gov/api/regulationsgov/) with the function `set_datagov_key`, you can provide your key with the `key` argument to the `get_all_documents` and `get_all_comments` functions.
+Here, we obtain the documents and comments associated with docket ID [FAA-2018-1084](https://www.regulations.gov/docket/FAA-2018-1084). Note that if you have not set up your [API key](https://open.gsa.gov/api/regulationsgov/) with the function `set_datagov_key`, you can provide your key with the `key` argument to the `get_all_documents` and `get_all_comments` functions. We can do this using the `endpoint = "document"` argument since for the first case, we want all documents associated with ` docketId = "FAA-2018-1084"` and in the second case we want all comments associated with documents in `docketId = "FAA-2018-1084"`. 
 
 ```{r}
 
 
-documents <- get_all_documents(docketId = "FAA-2018-1084")
+documents <- get_all_documents(endpoint = "document",
+                               docketId = "FAA-2018-1084")
 
-comments <- get_all_comments(docketId = "FAA-2018-1084") 
+comments <- get_all_comments(endpoint = "document",
+                             docketId = "FAA-2018-1084") 
 
 
 ```

@@ -1,0 +1,172 @@
+---
+title: "Obtaining_Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Obtaining_Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+
+library(regulationsgov)
+
+```
+
+## Introduction 
+
+To get a better understanding for how the [regulations.gov](https://www.regulations.gov/) API works, it may be helpful to go through the page [here](https://open.gsa.gov/api/regulationsgov/).
+
+However, to provide a brief overview, there are a couple concepts to understand.
+
+There are 3 endpoints for the [regulations.gov](https://www.regulations.gov/) API:
+
+* comments
+* documents
+* dockets
+
+Each endpoint accepts different parameters. To see which parameters you should be using, look at the corresonding `construct_*_url` function. For example, if you choose the `comments` endpoint, look at the parameters for the `construct_comment_url`. 
+
+Note that use of the dockets endpoint likely won't be necessary in most cases, since we can obtain documents associated with multiple dockets using the `document` endpoint by passing it the docket IDs with the `docketId` argument. However, if you want to *search* for dockets matching certain criteria, this is where the dockets endpoint will be useful.
+
+In the case we are providing a single docketId, either the `document` or `docket` endpoint will work, as we show here. The `test = TRUE` argument is just for demonstration; it obtains the first 3 comments obtained for quicker running time and less API requests used. 
+
+```{r}
+
+# using document endpoint
+comments_document_endpoint <- get_all_comments(endpoint = "document",
+                             docketId = "FDA-2008-N-0115", 
+                             test = TRUE) 
+
+# using docket endpoint
+comments_docket_endpoint <- get_all_comments(endpoint = "docket",
+                             docketId = "FDA-2008-N-0115", 
+                             test = TRUE) 
+
+all.equal(comments_document_endpoint, comments_docket_endpoint)
+
+
+```
+
+
+However, in cases like this it is recommended to use the `document` endpoint because this will use less API requests.  
+
+
+## Current Limitations for Downloading
+
+Since the API has a 500 per hour rate limit and obtaining the download links for every document or comment uses an API request, it may take an extensive amount of time to obtain all download links. For example, [docket EOIR-2020-0003](https://www.regulations.gov/docket/EOIR-2020-0003) has 88,061 comments. To obtain download links for all these comments with the 500 per hour rate limit, this would take `88061 / 500 = 176.122` hours to run. They note in the page [here](https://open.gsa.gov/api/regulationsgov/) that they may provide a bulk download solution in the future. 
+
+
+## Obtaining Different Kinds of Data
+
+### Comments Endpoint Example 
+
+To get a feel for the feasibility of the data set you are thinking of, you can construct a url using one of the `construct_*_url` functions and see how many elements are returned by the given filtering criteria. To do this, we:
+
+* construct the url
+* retrieve the data for this url using the `get_data` function
+* observe how many elements are available by looking at the `totalElements`
+
+```{r}
+
+
+url <- construct_comment_url( agencyId = c("CMS", "EPA"),
+                             postedDate = c("2020-02-02", "2020-02-03"))
+
+dat <- get_data(url)
+
+dat$meta$totalElements
+
+```
+
+
+If the amount of data we see from `dat$meta$totalElements` is feasible, we can proceed with `get_all_comments`. This gives us a data frame with each row representing a comment.
+
+```{r}
+
+comments <- get_all_comments(endpoint = "comment",
+                             agencyId = c("CMS", "EPA"),
+                             postedDate = c("2020-02-02", "2020-02-03"))
+
+nrow(comments)
+
+```
+
+
+In the above example, if we expand the range of `postedDate` we see how quickly the number of comments becomes very large. Below, we change the `postedDate` argument from `postedDate = c("2020-02-02", "2020-02-03")` to `postedDate = c("2020-02-02", "2020-03-03")`, that is, increasing the second date by a month. 
+
+```{r}
+
+url <- construct_comment_url( agencyId = c("CMS", "EPA"),
+                             postedDate = c("2020-02-02", "2020-03-03"))
+
+comments <- get_data(url)
+
+comments$meta$totalElements
+
+
+```
+
+We see that now we have `r dat$meta$totalElements` elements, which would take an extensive amount of time to obtain. Narrowing the date range, as we did above, can reduce the number of elements. 
+
+
+
+### Dockets Endpoint Example 
+
+We can also search the dockets endpoint for dockets related to a particular search term. Here, we obtain dockets that were last modified between the dates `2021-01-02 12:00:00` and  `2021-10-02 12:00:00` and match the search term `"Medicaid Medicare"`, and we sort the results by title and the last modified date.
+
+
+
+```{r}
+
+url <- construct_docket_url(lastModifiedDate =  c("2021-01-02 12:00:00", 
+                                                  "2021-10-02 12:00:00"),
+                              searchTerm = "Medicaid Medicare",
+                              sort = c("title","lastModifiedDate"))
+
+dockets <- get_data(url)
+
+dockets$meta$totalElements
+
+```
+
+These filtering criteria give us `r dat$meta$totalElements`  elements. However, note that each of these dockets can have a substantial number of comments, so additional filtering may be needed if you want to obtain all the comments for these dockets.
+
+
+
+### Documents Endpoint Example 
+
+Here, we obtain all documents for the docket IDs `EPA-HQ-OAR-2010-1040` and `EPA-HQ-OAR-2018-0170`. 
+
+```{r}
+
+url <- construct_document_url(docketId = c("EPA-HQ-OAR-2010-1040", 
+                                           "EPA-HQ-OAR-2018-0170"))
+
+documents <- get_data(url)
+
+documents$meta$totalElements
+
+```
+
+We can then obtain comments for these documents.
+
+Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were `r documents$meta$totalElements ` this means many of the documents associated with these dockets did not have any comments associated with them. 
+
+```{r}
+
+comments <- get_all_comments(endpoint = "document", 
+                             docketId = c("EPA-HQ-OAR-2010-1040", 
+                                           "EPA-HQ-OAR-2018-0170"))
+
+nrow(comments)
+
+```
+
