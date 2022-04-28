@@ -2,7 +2,7 @@
 title: "Analyze the Text of a Docket of Interest"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Analyze_Text}
+  %\VignetteIndexEntry{Analyze the Text of a Docket of Interest}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -216,7 +216,7 @@ comments_cleaned %>%
 
 From here, we can easily make plots to explore the frequency of words across our texts. It might be useful to get a quick look at the most frequent words in the documents and comments associated with docket FAA-2018-1084.
 
-```{r,  , eval = FALSE}
+```{r, eval = FALSE}
 
 
 documents_cleaned %>%
@@ -230,7 +230,9 @@ documents_cleaned %>%
          x = "Count",
          title = "Most Frequent Words in Documents for Docket FAA-2018-1084") +
     theme_bw() +
-  theme(plot.title = element_text(face = "bold", hjust = .5))
+  theme(plot.title = element_text(face = "bold", 
+                                  hjust = .5),
+        text = element_text(size = 14))
  
 
 
@@ -246,6 +248,12 @@ comments_cleaned %>%
          title = "Most Frequent Words in Comments for Docket FAA-2018-1084") +
     theme_bw()
  
+
+```
+
+```{r, out.width = '100%', include = FALSE}
+
+knitr::include_graphics("figures/freq_words_docs_FAA-2018-1084.jpg")
 
 ```
 
