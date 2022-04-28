@@ -29,11 +29,10 @@ If you are interested in analyzing the text of any legal document on [regulation
 
 Here, we obtain the documents and comments associated with docket ID [FAA-2018-1084](https://www.regulations.gov/docket/FAA-2018-1084). Note that if you have not set up your [API key](https://open.gsa.gov/api/regulationsgov/) with the function `set_datagov_key`, you can provide your key with the `key` argument to the `get_all_documents` and `get_all_comments` functions. We can do this using the `endpoint = "document"` argument since for the first case, we want all documents associated with ` docketId = "FAA-2018-1084"` and in the second case we want all comments associated with documents in `docketId = "FAA-2018-1084"`. 
 
-```{r}
+```{r, eval = FALSE}
 
 
-documents <- get_all_documents(endpoint = "document",
-                               docketId = "FAA-2018-1084")
+documents <- get_all_documents(docketId = "FAA-2018-1084")
 
 comments <- get_all_comments(endpoint = "document",
                              docketId = "FAA-2018-1084") 
@@ -44,7 +43,7 @@ comments <- get_all_comments(endpoint = "document",
 
 After running the previous lines, `documents` will be a data frame with information on all documents in the docket `FAA-2018-1084`. Each row represents a single document, so since there are only 2 documents for this docket, our data frame has two rows. The number of columns, meanwhile, will depend on the metadata for the documents for that particular docket. Some columns that may be of interest include `documentType`, `subtype`, `postedDate`, and `openForComment`. 
 
-```{r}
+```{r, eval = FALSE}
 
 documents %>% 
   select("data_id", 
@@ -61,7 +60,7 @@ documents %>%
 The comments data frame will contain all comments corresponding to the docket `FAA-2018-1084`. Each row corresponds to a single comment ID; as we see below, there are 418 comments corresponding to this docket. We can verify this information [here](https://www.regulations.gov/docket/FAA-2018-1084). The columns of this data frame will be different than the documents data frame because the associated metadata is different. A few of these columns are shown below.
 
 
-```{r}
+```{r, eval = FALSE}
 
 # number of comments 
 nrow(comments)
@@ -98,7 +97,7 @@ Here, we add the text to the data frames for both the `comments` and the `docume
 
 
 
-```{r, message = FALSE, results = 'hide'}
+```{r, eval = FALSE, message = FALSE, results = 'hide'}
 
 
 # add the text of the documents themselves
@@ -121,7 +120,7 @@ comments <- add_text(comments)
 Since some comments will be in the free text field while others are attached, we can combine the comment text into a single column using the following code. Here, we replace the `NA` observations with empty strings and then paste together the free text field with the attachments text field to put all the text for a single comment ID into a single column.
 
 
-```{r}
+```{r, eval = FALSE}
 
 
 comments <- comments %>% 
@@ -142,7 +141,7 @@ From here, we may want to begin some exploratory analysis of the text. For this 
 
 First, we will subset to only the `data_id` and `text` columns. 
 
-```{r}
+```{r, eval = FALSE}
 
 documents <- documents %>% 
   select(data_id, text) %>%
@@ -169,7 +168,7 @@ comments <- comments %>%
 Here, we use the `unnest_tokens` function from the `tidytext` package to create a tidy data frame where each row is the observation of a word within that particular unit of text, in this case, a document.
 
 
-```{r}
+```{r, eval = FALSE}
 
 library(tidytext)
 library(stringr)
@@ -196,7 +195,7 @@ documents_cleaned %>%
 
 We can perform the same operation to the `comments` data.
 
-```{r}
+```{r, eval = FALSE}
 
 comments_cleaned <- comments  %>%
   unnest_tokens(output = word, 
@@ -217,7 +216,7 @@ comments_cleaned %>%
 
 From here, we can easily make plots to explore the frequency of words across our texts. It might be useful to get a quick look at the most frequent words in the documents and comments associated with docket FAA-2018-1084.
 
-```{r,  fig.show="hold", out.width="40%", fig.asp = .6}
+```{r,  , eval = FALSE}
 
 
 documents_cleaned %>%
@@ -230,7 +229,8 @@ documents_cleaned %>%
     labs(y = "Most Frequent Words",
          x = "Count",
          title = "Most Frequent Words in Documents for Docket FAA-2018-1084") +
-    theme_bw()
+    theme_bw() +
+  theme(plot.title = element_text(face = "bold", hjust = .5))
  
 
 
@@ -253,7 +253,7 @@ comments_cleaned %>%
 Rather than looking at the most frequent individual words in the documents and comments associated with docket FAA-2018-1084, we can also look at $n$-grams, that is, clusters of words of length $n$. We can do this with the `unnest_tokens` function by supplying the   `token = "ngrams"` arguments and specifying $n$ with the argument `n = 2`.
 
 
-```{r, fig.show='hold', out.width='40%', fig.asp = .6}
+```{r,eval = FALSE, fig.show='hold', out.width='40%', fig.asp = .6}
 
 #### FOR DOCUMENTS 
 
@@ -320,7 +320,7 @@ comments_bigrams %>%
 
 The `widyr` package is particularly convenient for working with correlations. Since we only have two documents, it doesn't really make calculate correlations across documents. Thus, here we only look into correlations in words across comments. Here, we use `filter(n() >= 30)` to filter for words appearing more than 30 times, before calculating the pairwise correlation with the `widyr` function `pairwise_cor`. 
 
-```{r, warning = FALSE}
+```{r, warning = FALSE, eval = FALSE}
 
 library(widyr)
 
@@ -344,7 +344,7 @@ You might be interested in studying the words most highly correlated with a few 
 
 We can do this by filtering for these terms, as follows. Note that we obtain the most highly correlated words for each word by first grouping by the second word and then using the `dplyr` function `slicemax`. Then we arrange and create an order variable that represents the row number to enable us to plot the words in ascending order for each facet.
 
-```{r, out.width='100%'}
+```{r, eval = FALSE, out.width='100%'}
 
 
 
