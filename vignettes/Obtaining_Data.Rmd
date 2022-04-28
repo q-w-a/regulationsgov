@@ -51,7 +51,8 @@ comments_docket_endpoint <- get_all_comments(endpoint = "docket",
                              docketId = "FDA-2008-N-0115", 
                              test = TRUE) 
 
-all.equal(comments_document_endpoint, comments_docket_endpoint)
+all.equal(comments_document_endpoint, 
+          comments_docket_endpoint)
 
 
 ```
@@ -162,7 +163,7 @@ documents$meta$totalElements
 
 We can then obtain comments for these documents.
 
-Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were 103 total elements which we see from`documents$meta$totalElements`  this means many of the documents associated with these dockets did not have any comments associated with them. 
+Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were 103 total elements which we see from `documents$meta$totalElements`  this means many of the documents associated with these dockets did not have any comments associated with them. 
 
 ```{r, eval = FALSE}
 
@@ -174,3 +175,6 @@ nrow(comments)
 
 ```
 
+## Conclusion
+
+Ultimately, these brief examples demonstrate how you can tailor the filtering parameter of the API to obtain a data set of reasonable size. You can read more detail about the arguments [here](https://open.gsa.gov/api/regulationsgov/).
