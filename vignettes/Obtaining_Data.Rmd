@@ -20,6 +20,7 @@ library(regulationsgov)
 
 ```
 
+
 ## Introduction 
 
 To get a better understanding for how the [regulations.gov](https://www.regulations.gov/) API works, it may be helpful to go through the page [here](https://open.gsa.gov/api/regulationsgov/).
@@ -38,7 +39,7 @@ Note that use of the dockets endpoint likely won't be necessary in most cases, s
 
 In the case we are providing a single docketId, either the `document` or `docket` endpoint will work, as we show here. The `test = TRUE` argument is just for demonstration; it obtains the first 3 comments obtained for quicker running time and less API requests used. 
 
-```{r}
+```{r, eval = FALSE}
 
 # using document endpoint
 comments_document_endpoint <- get_all_comments(endpoint = "document",
@@ -74,7 +75,7 @@ To get a feel for the feasibility of the data set you are thinking of, you can c
 * retrieve the data for this url using the `get_data` function
 * observe how many elements are available by looking at the `totalElements`
 
-```{r}
+```{r, eval = FALSE}
 
 
 url <- construct_comment_url( agencyId = c("CMS", "EPA"),
@@ -89,7 +90,7 @@ dat$meta$totalElements
 
 If the amount of data we see from `dat$meta$totalElements` is feasible, we can proceed with `get_all_comments`. This gives us a data frame with each row representing a comment.
 
-```{r}
+```{r, eval = FALSE}
 
 comments <- get_all_comments(endpoint = "comment",
                              agencyId = c("CMS", "EPA"),
@@ -102,10 +103,11 @@ nrow(comments)
 
 In the above example, if we expand the range of `postedDate` we see how quickly the number of comments becomes very large. Below, we change the `postedDate` argument from `postedDate = c("2020-02-02", "2020-02-03")` to `postedDate = c("2020-02-02", "2020-03-03")`, that is, increasing the second date by a month. 
 
-```{r}
+```{r, eval = FALSE}
 
 url <- construct_comment_url( agencyId = c("CMS", "EPA"),
-                             postedDate = c("2020-02-02", "2020-03-03"))
+                             postedDate = c("2020-02-02",
+                                            "2020-03-03"))
 
 comments <- get_data(url)
 
@@ -114,7 +116,7 @@ comments$meta$totalElements
 
 ```
 
-We see that now we have `r dat$meta$totalElements` elements, which would take an extensive amount of time to obtain. Narrowing the date range, as we did above, can reduce the number of elements. 
+We see that since the output of `comments$meta$totalElements` is 17856 that this number of comments would take an extensive amount of time to obtain. Narrowing the date range, as we did above, can reduce the number of elements. 
 
 
 
@@ -124,10 +126,12 @@ We can also search the dockets endpoint for dockets related to a particular sear
 
 
 
-```{r}
+```{r, eval = FALSE}
 
-url <- construct_docket_url(lastModifiedDate =  c("2021-01-02 12:00:00", 
-                                                  "2021-10-02 12:00:00"),
+url <- construct_docket_url(lastModifiedDate =
+                              c("2021-01-02 12:00:00", 
+                                                
+                                "2021-10-02 12:00:00"),
                               searchTerm = "Medicaid Medicare",
                               sort = c("title","lastModifiedDate"))
 
@@ -137,7 +141,7 @@ dockets$meta$totalElements
 
 ```
 
-These filtering criteria give us `r dat$meta$totalElements`  elements. However, note that each of these dockets can have a substantial number of comments, so additional filtering may be needed if you want to obtain all the comments for these dockets.
+These filtering criteria give us 108 elements as we see in `dockets$meta$totalElements`. However, note that each of these dockets can have a substantial number of comments, so additional filtering may be needed if you want to obtain all the comments for these dockets.
 
 
 
@@ -145,7 +149,7 @@ These filtering criteria give us `r dat$meta$totalElements`  elements. However, 
 
 Here, we obtain all documents for the docket IDs `EPA-HQ-OAR-2010-1040` and `EPA-HQ-OAR-2018-0170`. 
 
-```{r}
+```{r, eval = FALSE}
 
 url <- construct_document_url(docketId = c("EPA-HQ-OAR-2010-1040", 
                                            "EPA-HQ-OAR-2018-0170"))
@@ -158,9 +162,9 @@ documents$meta$totalElements
 
 We can then obtain comments for these documents.
 
-Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were `r documents$meta$totalElements ` documents this means many of the documents associated with these dockets did not have any comments associated with them. 
+Here, we obtain 60 comments because there are 16 comment associated with [docket EPA-HQ-OAR-2010-1040](https://www.regulations.gov/docket/EPA-HQ-OAR-2010-1040) and 44 comments associated with [EPA-HQ-OAR-2018-0170](https://www.regulations.gov/docket/EPA-HQ-OAR-2018-0170). Since there were 103 total elements which we see from`documents$meta$totalElements`  this means many of the documents associated with these dockets did not have any comments associated with them. 
 
-```{r}
+```{r, eval = FALSE}
 
 comments <- get_all_comments(endpoint = "document", 
                              docketId = c("EPA-HQ-OAR-2010-1040", 
