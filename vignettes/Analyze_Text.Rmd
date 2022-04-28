@@ -246,14 +246,18 @@ comments_cleaned %>%
     labs(y = "Most Frequent Words",
          x = "Count",
          title = "Most Frequent Words in Comments for Docket FAA-2018-1084") +
-    theme_bw()
+    theme_bw()  +
+  theme(plot.title = element_text(face = "bold", 
+                                  hjust = .5),
+        text = element_text(size = 14))
  
 
 ```
 
-```{r, out.width = '100%', include = FALSE}
+```{r, out.width = '100%', echo = FALSE}
 
 knitr::include_graphics("figures/freq_words_docs_FAA-2018-1084.jpg")
+knitr::include_graphics("figures/freq_words_comments_FAA-2018-1084.jpg")
 
 ```
 
@@ -275,7 +279,10 @@ docs_bigrams <- documents %>%
            sep = " ") %>%
   filter(!word1 %in% stop_words$word & !word2 %in% stop_words$word) %>%
   count(word1, word2, sort = TRUE)  %>%
-  unite(col = "bigram", word1, word2, sep = " ")
+  unite(col = "bigram", 
+        word1, 
+        word2, 
+        sep = " ")
 
 
 
@@ -291,7 +298,10 @@ docs_bigrams %>%
     labs(y = "Most Frequent Words",
          x = "Count",
          title = "Most Frequent Bigrams in Documents for Docket FAA-2018-1084") +
-    theme_bw()
+    theme_bw() +
+  theme(plot.title = element_text(face = "bold", 
+                                  hjust = .5),
+        text = element_text(size = 16))
 
 
 #### FOR COMMENTS 
@@ -319,7 +329,17 @@ comments_bigrams %>%
     labs(y = "Most Frequent Words",
          x = "Count",
          title = "Most Frequent Bigrams in Comments for Docket FAA-2018-1084") +
-    theme_bw()
+    theme_bw() +
+  theme(plot.title = element_text(face = "bold", 
+                                  hjust = .5),
+        text = element_text(size = 16))
+
+```
+
+```{r, out.width = '100%', echo = FALSE}
+
+knitr::include_graphics("figures/freq_bigrams_docs_FAA-2018-1084.jpg")
+knitr::include_graphics("figures/freq_bigrams_comments_FAA-2018-1084.jpg")
 
 ```
 
