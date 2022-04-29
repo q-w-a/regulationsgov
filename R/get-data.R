@@ -127,7 +127,8 @@ iterate_over_pages <- function(url, quiet = TRUE) {
   }
   else{
     message("There are ", first$meta$totalElements,
-            " comments. ")
+            " elements.")
+    if (!check_continue(first$meta$totalElements)) return(NULL)
     pages <- get_all(url, first$meta$totalElements, quiet = quiet)
   }
   return(pages)
