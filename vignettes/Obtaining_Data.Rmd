@@ -130,8 +130,7 @@ We can also search the dockets endpoint for dockets related to a particular sear
 ```{r, eval = FALSE}
 
 url <- construct_docket_url(lastModifiedDate =
-                              c("2021-01-02 12:00:00", 
-                                                
+                              c("2021-01-02 12:00:00",               
                                 "2021-10-02 12:00:00"),
                               searchTerm = "Medicaid Medicare",
                               sort = c("title","lastModifiedDate"))
