@@ -4,14 +4,18 @@
 \alias{get_all_documents}
 \title{Get Document Metadata for Given Documents or Docket}
 \usage{
-get_all_documents(docketId = NULL, documentId = NULL, key = NULL)
+get_all_documents(endpoint = "document", ..., quiet = TRUE, key = NULL)
 }
 \arguments{
-\item{docketId}{character string; the docket ID for the documents needed. If you're providing a document
-ID with the \code{document_id} argument, this should be left \code{NULL}.}
+\item{endpoint}{API endpoint that you want to use for the API call.
+Accepted options are "document" or "docket".}
 
-\item{documentId}{character string or character vector containing the document ID
-or multiple document IDs for which metadata is desired.}
+\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}} if
+\code{endpoint = "document"} (the default) or \code{\link[=construct_docket_url]{construct_docket_url()}} if
+\code{endpoint = "docket"}}
+
+\item{quiet}{logical; \code{FALSE} if you want detailed information about the URLs and
+number of elements to be printed to the console. Default value is \code{TRUE}}
 
 \item{key}{the API key passed in the function call; this may be NULL if the user has
 chosen to set up the key as an environmental variable instead with the function
