@@ -19,14 +19,53 @@
 #' result <- get_all_documents(documentId = c("FDA-2012-S-1144-0322",
 #'  "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"))
 #' }
-get_all_documents <- function(docketId = NULL, documentId = NULL, key = NULL) {
+get_all_documents <- function(endpoint = "document",
+                              ...,
+                              quiet = TRUE,
+                              key = NULL) {
   key <- check_auth(key)
-
-  if (!is.null(docketId)) {
-    documents <- construct_document_url(docketId = docketId,
+  if (!endpoint %in% c("document", "docket")) {
+    stop("Invalid Input",
+         "\nThe only endpoints available are 'document' and 'docket'",
+         call. =  FALSE)
+  }
+  args <- list(...)
+  if (!is.null(args[["documentId"]])) {
+    documentId <- args[["documentId"]]
+  }
+  else if (endpoint == "document") {
+    validate_params(list(...))
+    documents <- construct_document_url(...,
                                         key = key) %>%
       iterate_over_pages()
     documentId <- documents$data$id
+  }
+  else if (endpoint == "docket") {
+    validate_params_dockets(list(...))
+    url <- construct_docket_url(..., key = key)
+    if (!quiet) {
+      message("URL constructed based on given arguments: ",
+              url, "\n") }
+    docs <- iterate_over_pages(url, quiet = quiet)
+    docketids <- purrr::map(docs, ~ifelse("data" %in% names(.x),
+                                           .x$data["id"],
+                                           .x["id"])) %>%
+      unlist()
+
+    if (length(docketids) == 0) {
+      message("No data to retrieve.")
+      return(NULL)
+    }
+
+
+    url <- construct_document_url(docketId = docketids,
+                                  key = key)
+    docs <- iterate_over_pages(url,
+                               quiet = quiet)
+    documentId <- purrr::map(docs, ~ifelse("data" %in% names(.x),
+                                           .x$data["id"],
+                                           .x["id"])) %>%
+      unlist()
   }
 
   # if there are more than 500 links, slow the iteration to
