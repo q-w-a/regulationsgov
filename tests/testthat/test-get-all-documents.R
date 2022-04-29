@@ -25,3 +25,17 @@ test_that("get_all_documents has expected output with docketId argument", {
   expect_equal(nrow(result), 1)
 
 })
+
+test_that("get_all_documents has expected output with docket endpoint", {
+  skip_if_no_key()
+  result <- get_all_documents(endpoint = "docket",
+                              agencyId = "CMS",
+                              lastModifiedDate = c("2020-01-02 12:00:00",
+                                                   "2020-02-15 12:00:00"))
+  expect_equal(nrow(result), 8)
+  result <- get_all_documents(endpoint = "docket",
+                              searchTerm = "Medicare Medicaid",
+                              lastModifiedDate = c("2021-05-02 12:00:00",
+                                                   "2021-06-20 12:00:00"))
+  expect_equal(nrow(result), 3)
+})
