@@ -52,6 +52,7 @@ get_all_comments <- function(endpoint,
   }
 
   if (endpoint == "document") {
+    validate_params(list(...))
     url <- construct_document_url(..., key = key)
     if (!quiet) {
       message("URL constructed based on given arguments: ",
@@ -63,6 +64,7 @@ get_all_comments <- function(endpoint,
   }
 
   else if (endpoint == "docket") {
+    validate_params_dockets(list(...))
     url <- construct_docket_url(..., key = key)
     if (!quiet) {
       message("URL constructed based on given arguments: ",
@@ -71,7 +73,6 @@ get_all_comments <- function(endpoint,
     docketids <- purrr::map(docs, ~.x["id"]) %>%
       unlist()
 
-    #docketids <- paste0(docketids, collapse = ",")
     url <- construct_document_url(docketId = docketids,
                                   key = key)
     docs <- iterate_over_pages(url,
@@ -82,6 +83,7 @@ get_all_comments <- function(endpoint,
   }
 
   else if (endpoint == "comment") {
+    validate_params_comments(list(...))
     url <- construct_comment_url(..., key = key)
     if (!quiet) {
       message("URL constructed based on given arguments: ",
