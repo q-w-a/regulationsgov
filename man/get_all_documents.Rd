@@ -7,15 +7,16 @@
 get_all_documents(endpoint = "document", ..., quiet = TRUE, key = NULL)
 }
 \arguments{
-\item{endpoint}{API endpoint that you want to use for the API call.
-Accepted options are "document" or "docket".}
+\item{endpoint}{which endpoint you want the url to be based on. The
+options are "document", "comment", and "docket". Note that this will be
+the endpoint your parameters will be applied to (e.g. the posted date of
+the comment versus the posted date of the document).}
 
-\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}} if
-\code{endpoint = "document"} (the default) or \code{\link[=construct_docket_url]{construct_docket_url()}} if
-\code{endpoint = "docket"}}
+\item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}} or
+\code{\link[=construct_docket_url]{construct_docket_url()}}.}
 
-\item{quiet}{logical; \code{FALSE} if you want detailed information about the URLs and
-number of elements to be printed to the console. Default value is \code{TRUE}}
+\item{quiet}{logical; FALSE if you want to see the progress of the function as it
+acquires detailed information for each comment.}
 
 \item{key}{the API key passed in the function call; this may be NULL if the user has
 chosen to set up the key as an environmental variable instead with the function

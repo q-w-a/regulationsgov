@@ -2,10 +2,14 @@
 
 #' Get Document Metadata for Given Documents or Docket
 #'
-#' @param docketId character string; the docket ID for the documents needed. If you're providing a document
-#' ID with the \code{document_id} argument, this should be left \code{NULL}.
-#' @param documentId character string or character vector containing the document ID
-#' or multiple document IDs for which metadata is desired.
+#' @param endpoint which endpoint you want the url to be based on. The
+#' options are "document", "comment", and "docket". Note that this will be
+#' the endpoint your parameters will be applied to (e.g. the posted date of
+#' the comment versus the posted date of the document).
+#' @param ... arguments passed to [construct_document_url()] or
+#' [construct_docket_url()].
+#' @param quiet logical; FALSE if you want to see the progress of the function as it
+#' acquires detailed information for each comment.
 #' @param key the API key passed in the function call; this may be NULL if the user has
 #'   chosen to set up the key as an environmental variable instead with the function
 #'   \code{\link{set_datagov_key}}. You can use "DEMO_KEY" for a very limited number of calls if needed.
