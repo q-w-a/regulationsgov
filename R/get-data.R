@@ -12,25 +12,27 @@
 #' @importFrom httr config GET
 #' @export
 #' @examples
-#'\dontrun{
-#'get_data("https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&api_key=DEMO_KEY")
-#'}
-get_data <- function(url, df = FALSE, quiet = TRUE,...) {
+#' \dontrun{
+#' get_data("https://api.regulations.gov/v4/documents?filter[docketId]=CMS-2014-0063&api_key=DEMO_KEY")
+#' }
+get_data <- function(url, df = FALSE, quiet = TRUE, ...) {
 
   # try insistently to get response for given url
   # don't retry on errors 400, 403 since do not represent
   # errors relating to too many requests, so the issue will
   # not be resolved by retrying
-  resp <- httr::RETRY(verb = "GET",
-                      url = url,
-                      config = config(ssl_verifypeer = FALSE),
-                      pause_min = 4,
-                      pause_base = 2,
-                      pause_cap = 3010,
-                      max_times = 50,
-                      terminate_on = c(400,403),
-                      quiet = quiet,
-                      ...)
+  resp <- httr::RETRY(
+    verb = "GET",
+    url = url,
+    config = config(ssl_verifypeer = FALSE),
+    pause_min = 4,
+    pause_base = 2,
+    pause_cap = 3010,
+    max_times = 50,
+    terminate_on = c(400, 403),
+    quiet = quiet,
+    ...
+  )
 
   # check if type is as expected
   if (httr::http_type(resp) != "application/vnd.api+json") {
@@ -45,14 +47,16 @@ get_data <- function(url, df = FALSE, quiet = TRUE,...) {
     error_message <- httr::http_status(resp) %>%
       paste(collapse = "\n")
     stop(error_message,
-      call. = FALSE)
+      call. = FALSE
+    )
   }
 
   # obtain content of request
   parsed <- jsonlite::fromJSON(
     httr::content(resp, "text"),
     simplifyVector = TRUE,
-    flatten = TRUE)
+    flatten = TRUE
+  )
 
   if (df) {
     parsed <- parsed$data %>%
@@ -74,7 +78,8 @@ get_data <- function(url, df = FALSE, quiet = TRUE,...) {
 #' \dontrun{
 #' get_data_by_page("https://api.regulations.gov/v4/documents?
 #' filter[docketId]=CMS-2014-0063&page[size]=250&page[number]=1&api_key=DEMO_KEY",
-#' page_number = 2)
+#'   page_number = 2
+#' )
 #' }
 #' @keywords internal
 get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
@@ -104,31 +109,36 @@ get_data_by_page <- function(url, page_number = 1, quiet = TRUE) {
 #' Functionality is not yet implemented for obtaining all elements when there are
 #' more than 5000 elements.
 #' @examples
-#' \dontrun{iterate_over_pages("https://api.regulations.gov/v4/comments?filter
+#' \dontrun{
+#' iterate_over_pages("https://api.regulations.gov/v4/comments?filter
 #' [commentOnId]=09000064816e1a41&page[size]=250&page[number]=1&
 #' sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
 #' }
 #' @keywords internal
 iterate_over_pages <- function(url, quiet = TRUE) {
-
   first <- get_data_by_page(url, page_number = 1, quiet = quiet)
 
-  if (!quiet) message("Number of Elements is: ",
-                      first$meta$totalElements)
+  if (!quiet) {
+    message(
+      "Number of Elements is: ",
+      first$meta$totalElements
+    )
+  }
 
   if (is.null(first$meta$totalElements) || first$meta$totalElements <= 250) {
     pages <- first
-  }
-
-  else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000 ) {
+  } else if (first$meta$totalElements > 250 && first$meta$totalElements <= 5000) {
     # since we can have 250 elements on each page, set number of pages to get all elements
-    end <- floor(first$meta$totalElements /250) + 1
-    pages <- map(1:end, ~get_data_by_page(page_number = .x, url = url, quiet = quiet))
-  }
-  else{
-    message("There are ", first$meta$totalElements,
-            " elements.")
-    if (!check_continue(first$meta$totalElements)) return(NULL)
+    end <- floor(first$meta$totalElements / 250) + 1
+    pages <- map(1:end, ~ get_data_by_page(page_number = .x, url = url, quiet = quiet))
+  } else {
+    message(
+      "There are ", first$meta$totalElements,
+      " elements."
+    )
+    if (!check_continue(first$meta$totalElements)) {
+      return(NULL)
+    }
     pages <- get_all(url, first$meta$totalElements, quiet = quiet)
   }
   return(pages)
@@ -147,44 +157,53 @@ iterate_over_pages <- function(url, quiet = TRUE) {
 #' TRUE, where the urls are not printed to the console.
 #' @keywords internal
 get_all <- function(url, num_elements, quiet = TRUE) {
-
   n <- num_elements
 
   # 20 pages maximum, 250 elements per page
-  iterations <- floor(n / (250*20)) + 1
+  iterations <- floor(n / (250 * 20)) + 1
 
-  results <- map(1:20, ~get_data_by_page(page_number = .x,
-                                            url = url,
-                                         quiet = quiet)$data)
+  results <- map(1:20, ~ get_data_by_page(
+    page_number = .x,
+    url = url,
+    quiet = quiet
+  )$data)
   # extract the date in the last element
-  last_date <- find_element(results[[20]],
-                            "lastModifiedDate") %>%
+  last_date <- find_element(
+    results[[20]],
+    "lastModifiedDate"
+  ) %>%
     unlist(use.names = FALSE)
 
   last_date <- last_date[length(last_date)]
   last_date <- convert_time(last_date)
 
   for (i in 2:(iterations)) {
-
     url_split <- strsplit(url, "page[size]",
-                          fixed= TRUE) %>%
+      fixed = TRUE
+    ) %>%
       unlist()
-    new_url <- paste0(url_split[1],
-                      "filter[lastModifiedDate][ge]=",
-                      last_date,
-                      "&page[size]",
-                      url_split[2])
+    new_url <- paste0(
+      url_split[1],
+      "filter[lastModifiedDate][ge]=",
+      last_date,
+      "&page[size]",
+      url_split[2]
+    )
     url_split <- strsplit(url, "sort") %>%
       unlist()
 
     if (!quiet) message(new_url)
 
-    pages <- map(1:20, ~get_data_by_page(page_number = .x,
-                                           url = new_url,
-                                         quiet = quiet)$data)
+    pages <- map(1:20, ~ get_data_by_page(
+      page_number = .x,
+      url = new_url,
+      quiet = quiet
+    )$data)
 
-    last_date <- find_element(pages[[20]],
-                              "lastModifiedDate") %>%
+    last_date <- find_element(
+      pages[[20]],
+      "lastModifiedDate"
+    ) %>%
       unlist(use.names = FALSE)
 
     last_date <- last_date[length(last_date)]
@@ -203,13 +222,13 @@ get_all <- function(url, num_elements, quiet = TRUE) {
 convert_time <- function(date) {
   date <- gsub("T", " ", date)
   time <- strptime(date,
-                   format = "%Y-%m-%d %T",
-                   tz = "UTC") %>%
+    format = "%Y-%m-%d %T",
+    tz = "UTC"
+  ) %>%
     as.POSIXct() %>%
     format(tz = "America/New_York")
 
   return(time)
-
 }
 
 
@@ -231,22 +250,17 @@ convert_df <- function(parsed_data) {
   if (purrr::is_empty(parsed_data)) {
     message("No data available for the given url.")
     return(NULL)
-  }
-  else if (!is.data.frame(parsed_data)) {
-
-  parsed_data <- parsed_data %>%
+  } else if (!is.data.frame(parsed_data)) {
+    parsed_data <- parsed_data %>%
       unlist(recursive = FALSE) %>%
-      t()  %>%
+      t() %>%
       as.data.frame()
   }
   parsed_data %>%
     select(!dplyr::contains("display")) %>%
-    rename_with(~gsub("attributes\\.",
-                      "",
-                      .x))
+    rename_with(~ gsub(
+      "attributes\\.",
+      "",
+      .x
+    ))
 }
-
-
-
-
-
