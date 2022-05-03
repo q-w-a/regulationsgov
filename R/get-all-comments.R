@@ -34,7 +34,7 @@
 #' documentId="NIH-2007-0930-0001")
 #'
 #' # retrieve all comments for documents last modified between 2021-04-01 12:00:00 and
-#' 2021-04-02 12:00:00 with search term 'privacy'
+#' # 2021-04-02 12:00:00 with search term 'privacy'
 #' comments <- get_all_comments(endpoint = "document",
 #' lastModifiedDate = c("2021-04-01 12:00:00", "2021-04-02 12:00:00"),
 #' quiet = FALSE, searchTerm = "privacy")
