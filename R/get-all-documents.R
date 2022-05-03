@@ -2,12 +2,13 @@
 
 #' Get Document Metadata for Given Documents or Docket
 #'
-#' @param endpoint which endpoint you want the url to be based on. The
-#' options are "document", "comment", and "docket". Note that this will be
+#' @param endpoint string that represents which endpoint you want the
+#' url to be based on. The options are "document" and "docket". Note that this will be
 #' the endpoint your parameters will be applied to (e.g. the posted date of
-#' the comment versus the posted date of the document).
+#' the document versus the posted date of the docket). The default value
+#' is "document."
 #' @param ... arguments passed to [construct_document_url()] or
-#' [construct_docket_url()].
+#' [construct_docket_url()], whichever function corresponds to the endpoint provided.
 #' @param quiet logical; FALSE if you want to see the progress of the function as it
 #' acquires detailed information for each comment.
 #' @param key the API key passed in the function call; this may be NULL if the user has
@@ -46,7 +47,8 @@ get_all_documents <- function(endpoint = "document",
   }
   else if (endpoint == "docket") {
     validate_params_dockets(list(...))
-    url <- construct_docket_url(..., key = key)
+    url <- construct_docket_url(...,
+                                key = key)
     if (!quiet) {
       message("URL constructed based on given arguments: ",
               url, "\n") }
