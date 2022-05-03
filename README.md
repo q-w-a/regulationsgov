@@ -51,12 +51,15 @@ the functions requiring authentication.
 For example, here we retrieve all comment metadata, including the
 download links, for the docket
 [CMS-2014-0063](https://www.regulations.gov/docket/CMS-2014-0063).
-First, we do so assuming we have set up the key.
+First, we do so assuming we have set up the key. See the **Obtaining
+Data** vignette for more information on how to use the `endpoint`
+argument.
 
 ``` r
 
 # retrieve all comments for the docket CMS-2014-0063
-comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063")
+comments_CMS_2014_0063 <- get_all_comments(endpoint = "document",
+                                           docketId = "CMS-2014-0063")
 ```
 
 If the key is not set up, then we provide the key with the `key`
@@ -68,7 +71,9 @@ for `DEMO_KEY` is much lower than an ordinary API key).
 
 
 # retrieve all comments for the docket CMS-2014-0063
-comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063", key = "DEMO_KEY")
+comments_CMS_2014_0063 <- get_all_comments(endpoint = "document",
+                                           docketId = "CMS-2014-0063", 
+                                           key = "DEMO_KEY")
 ```
 
 After running this command, if needed you can access it as an
@@ -92,7 +97,8 @@ the docket
 
 library(dplyr)
 
-documents <- regulationsgov::get_all_documents(docketId ="FDA-2009-N-0501")
+documents <- regulationsgov::get_all_documents(
+  docketId = "FDA-2009-N-0501")
 
 
 str(documents)
@@ -142,7 +148,8 @@ multiple comments, which we also can verify
 
 ``` r
 
-comments <- regulationsgov::get_all_comments(docketId ="FDA-2009-N-0501")
+comments <- regulationsgov::get_all_comments(endpoint = "document",
+                                             docketId ="FDA-2009-N-0501")
 
 comments %>%
   select(data_id, 
