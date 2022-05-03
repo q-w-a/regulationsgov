@@ -27,14 +27,16 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
     urls <- data_frame
   }
   # throw error for invalid input
-  else{
+  else {
     stop("data_frame argument is in an invalid format. Supply a data frame or character
          vector containing the file urls.")
   }
   # add trailing / if not present
-  if (substr(dest,
-             nchar(dest),
-             nchar(dest)) != "/") {
+  if (substr(
+    dest,
+    nchar(dest),
+    nchar(dest)
+  ) != "/") {
     dest <- paste0(dest, "/")
   }
   # create directory if it doesn't exist
@@ -62,23 +64,30 @@ download_all <- function(data_frame, dest, format = NULL, ...) {
   names <- strsplit(urls, "/")
 
   # create names for files based on ID and file format
-  names <- purrr::map_chr(names, ~{
+  names <- purrr::map_chr(names, ~ {
     l <- unlist(.x)
     n <- length(l)
-    paste0(l[(n-1):n],
-         collapse = "_")})
+    paste0(l[(n - 1):n],
+      collapse = "_"
+    )
+  })
 
   # download files, passing any additional arguments to
   # download.file
-  purrr::pwalk(list(url =urls,
-                   name =names),
-              function(url, name) {
-                utils::download.file(url = url,
-                             destfile = paste0(dest, name,
-                                                    collapse = ""),
-                             method = "auto",
-                             ...)} )
-
+  purrr::pwalk(
+    list(
+      url = urls,
+      name = names
+    ),
+    function(url, name) {
+      utils::download.file(
+        url = url,
+        destfile = paste0(dest, name,
+          collapse = ""
+        ),
+        method = "auto",
+        ...
+      )
+    }
+  )
 }
-
-
