@@ -19,10 +19,12 @@
 #' @examples
 #' \dontrun{
 #' # get all document data for documents associated with docket FDA-2009-N-0501
-#' result <- get_all_documents(docketId ="FDA-2009-N-0501")
+#' result <- get_all_documents(docketId = "FDA-2009-N-0501")
 #' # get all document data for document IDs
-#' result <- get_all_documents(documentId = c("FDA-2012-S-1144-0322",
-#'  "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"))
+#' result <- get_all_documents(documentId = c(
+#'   "FDA-2012-S-1144-0322",
+#'   "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"
+#' ))
 #' }
 get_all_documents <- function(endpoint = "document",
                               ...,
@@ -31,31 +33,36 @@ get_all_documents <- function(endpoint = "document",
   key <- check_auth(key)
   if (!endpoint %in% c("document", "docket")) {
     stop("Invalid Input",
-         "\nThe only endpoints available are 'document' and 'docket'",
-         call. =  FALSE)
+      "\nThe only endpoints available are 'document' and 'docket'",
+      call. =  FALSE
+    )
   }
   args <- list(...)
   if (!is.null(args[["documentId"]])) {
     documentId <- args[["documentId"]]
-  }
-  else if (endpoint == "document") {
+  } else if (endpoint == "document") {
     validate_params(list(...))
     documents <- construct_document_url(...,
-                                        key = key) %>%
+      key = key
+    ) %>%
       iterate_over_pages()
     documentId <- documents$data$id
-  }
-  else if (endpoint == "docket") {
+  } else if (endpoint == "docket") {
     validate_params_dockets(list(...))
     url <- construct_docket_url(...,
-                                key = key)
+      key = key
+    )
     if (!quiet) {
-      message("URL constructed based on given arguments: ",
-              url, "\n") }
+      message(
+        "URL constructed based on given arguments: ",
+        url, "\n"
+      )
+    }
     docs <- iterate_over_pages(url, quiet = quiet)
-    docketids <- purrr::map(docs, ~ifelse("data" %in% names(.x),
-                                           .x$data["id"],
-                                           .x["id"])) %>%
+    docketids <- purrr::map(docs, ~ ifelse("data" %in% names(.x),
+      .x$data["id"],
+      .x["id"]
+    )) %>%
       unlist()
 
     if (length(docketids) == 0) {
@@ -64,13 +71,17 @@ get_all_documents <- function(endpoint = "document",
     }
 
 
-    url <- construct_document_url(docketId = docketids,
-                                  key = key)
+    url <- construct_document_url(
+      docketId = docketids,
+      key = key
+    )
     docs <- iterate_over_pages(url,
-                               quiet = quiet)
-    documentId <- purrr::map(docs, ~ifelse("data" %in% names(.x),
-                                           .x$data["id"],
-                                           .x["id"])) %>%
+      quiet = quiet
+    )
+    documentId <- purrr::map(docs, ~ ifelse("data" %in% names(.x),
+      .x$data["id"],
+      .x["id"]
+    )) %>%
       unlist()
   }
 
@@ -79,10 +90,13 @@ get_all_documents <- function(endpoint = "document",
   if (length(documentId) > 500) {
     if (interactive()) {
       continue <- check_continue(length(documentId))
-      if (!continue) return(NULL)
+      if (!continue) {
+        return(NULL)
+      }
     }
     extract_meta_slow <- purrr::slowly(extract_meta,
-                                       rate = purrr::rate_delay(7.2))
+      rate = purrr::rate_delay(7.2)
+    )
   }
   # otherwise iterate at the normal speed
   else {
@@ -90,24 +104,30 @@ get_all_documents <- function(endpoint = "document",
   }
 
   # obtain information for all document IDs
-  documents <- map(documentId,
-                   ~paste0("https://api.regulations.gov/v4/documents/",
-                           .x) %>%
-                     extract_meta_slow(key = key))
+  documents <- map(
+    documentId,
+    ~ paste0(
+      "https://api.regulations.gov/v4/documents/",
+      .x
+    ) %>%
+      extract_meta_slow(key = key)
+  )
 
   # bind rows for all individual documents into one data frame
-  result <- tryCatch( {
-    bind_rows(documents)
+  result <- tryCatch(
+    {
+      bind_rows(documents)
     },
     error = function(e) {
-      documents <- map(documents, ~mutate(.x,
-                             across(everything(),
-                                    as.character)))
+      documents <- map(documents, ~ mutate(
+        .x,
+        across(
+          everything(),
+          as.character
+        )
+      ))
       bind_rows(documents)
     }
   )
   return(result)
 }
-
-
-
