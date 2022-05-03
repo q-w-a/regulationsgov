@@ -31,19 +31,20 @@
 #' are between 5 and 250. The default value is 250.
 #' @export
 #' @examples
-#' url <- construct_docket_url(agencyId = c("CMS", "EPA"),
-#' lastModifiedDate =  c("2020-01-02 12:00:00", "2020-02-02 12:00:00" ), key = "DEMO_KEY")
+#' url <- construct_docket_url(
+#'   agencyId = c("CMS", "EPA"),
+#'   lastModifiedDate = c("2020-01-02 12:00:00", "2020-02-02 12:00:00"), key = "DEMO_KEY"
+#' )
 #' url <- construct_docket_url(docketId = "CMS-2014-0063-0001", key = "DEMO_KEY")
-construct_docket_url <- function(
-  key = NULL,
-  docketId = NULL,
-  agencyId = NULL,
-  docketType = NULL,
-  searchTerm = NULL,
-  lastModifiedDate = NULL,
-  sort = NULL,
-  page_number = 1,
-  page_size = 250) {
+construct_docket_url <- function(key = NULL,
+                                 docketId = NULL,
+                                 agencyId = NULL,
+                                 docketType = NULL,
+                                 searchTerm = NULL,
+                                 lastModifiedDate = NULL,
+                                 sort = NULL,
+                                 page_number = 1,
+                                 page_size = 250) {
 
   # get arguments as a named list
   arguments <- as.list(environment())
@@ -60,8 +61,7 @@ construct_docket_url <- function(
   if (!is.null(docketId)) {
     # no need for multiple pages for single document
     url <- paste0(base, "/", docketId, "?api_key=", key)
-  }
-  else {
+  } else {
     # collapse all arguments
     url <- make_url(arguments, base, key)
   }
