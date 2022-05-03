@@ -20,19 +20,19 @@ utils::globalVariables(c("."))
 #' }
 set_datagov_key <- function(key) {
   # to see if the key supplied is valid
-  if ( !is.character(key) || nchar(key) != 40) {
-    stop('INVALID KEY:
+  if (!is.character(key) || nchar(key) != 40) {
+    stop("INVALID KEY:
     Valid Data.gov API keys for accessing the Regulations.gov
     API are a character string of length 40.
-    Go to the https://open.gsa.gov/api/regulationsgov/#getting-started to obtain a valid key.')
+    Go to the https://open.gsa.gov/api/regulationsgov/#getting-started to obtain a valid key.")
   }
 
   Sys.setenv(DATA_GOV_KEY = key)
 
   if (!identical(Sys.getenv("DATA_GOV_KEY"), "")) {
-    message('SUCCESS:
+    message("SUCCESS:
   DATA_GOV_KEY environment variable now set.
-  You do not have to use the key argument for the functions in this package.')
+  You do not have to use the key argument for the functions in this package.")
   }
 }
 
@@ -46,4 +46,3 @@ skip_if_no_key <- function() {
     testthat::skip("No authentication available; skipping the test")
   }
 }
-

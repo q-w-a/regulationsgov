@@ -10,52 +10,64 @@ globalVariables(c("arg"))
 #' @param arg_list named list containing arguments to the [construct_comment_url()] function.
 #' @keywords internal
 validate_params_comments <- function(arg_list) {
-
   err <- ""
 
   # check there is only one commentId
   if (!is.null(arg_list[["commentId"]])) {
     if (length(arg_list[["commentId"]]) > 1) {
-      err <- paste0(err,
-                    "\ncommentId only accepts one commentId")
+      err <- paste0(
+        err,
+        "\ncommentId only accepts one commentId"
+      )
     }
     # check no invalid arguments are provided
     res <- check_non_id(arg_list, "commentId")
-    if (!is.null(res))  err <- paste0(err, res)
+    if (!is.null(res)) err <- paste0(err, res)
   }
   # check that attachments is NULL or 'true'
-  if (!is.null(arg_list[["attachments"]]) && arg_list[["attachments"]] != "true")   {
-    err <- paste0(err,
-                  "\nattachments must be 'true' or NULL")
+  if (!is.null(arg_list[["attachments"]]) && arg_list[["attachments"]] != "true") {
+    err <- paste0(
+      err,
+      "\nattachments must be 'true' or NULL"
+    )
   }
 
 
   # check postedDate is less than or equal to length 2 and dates are of the correct format
   if (!is.null(arg_list[["postedDate"]])) {
-    err <- paste0(err, check_date(arg_list[["postedDate"]],
-                             "postedDate"))
+    err <- paste0(err, check_date(
+      arg_list[["postedDate"]],
+      "postedDate"
+    ))
   }
 
   # check lastModifiedDate is less than or equal to length 2 and dates are of the correct format
   if (!is.null(arg_list[["lastModifiedDate"]])) {
-    err <- paste0(err, check_date(arg_list[["lastModifiedDate"]],
-                             "lastModifiedDate"))
+    err <- paste0(err, check_date(
+      arg_list[["lastModifiedDate"]],
+      "lastModifiedDate"
+    ))
   }
 
   # check sort is one or more of accepted values
   if (!is.null(arg_list[["sort"]])) {
-    valid_types <- c( "postedDate",
-                     "lastModifiedDate",
-                     "documentId")
+    valid_types <- c(
+      "postedDate",
+      "lastModifiedDate",
+      "documentId"
+    )
 
     invalid <- !(arg_list[["sort"]] %in% valid_types)
     if (any(invalid)) {
-      err <- paste0(err,
-                    '\nonly can sort by one or more of the following:\n',
-                    '"postedDate", "lastModifiedDate", "documentId"',
-                    "\nCheck Entries: ",
-                    paste0(arg_list[["sort"]][invalid],
-                           collapse = ", "))
+      err <- paste0(
+        err,
+        "\nonly can sort by one or more of the following:\n",
+        '"postedDate", "lastModifiedDate", "documentId"',
+        "\nCheck Entries: ",
+        paste0(arg_list[["sort"]][invalid],
+          collapse = ", "
+        )
+      )
     }
   }
   if (err != "") {
@@ -75,20 +87,25 @@ validate_params_comments <- function(arg_list) {
 #' @keywords internal
 check_non_id <- function(arg_list, id) {
   # check no invalid arguments are provided
-  null_vals <- purrr::map_lgl(arg_list,
-                              purrr::is_null) %>%
-  dplyr::as_tibble(rownames = "arg") %>%
-  dplyr::filter(!(arg %in% c("key", id,
-                             "attachments", "page_number",
-                             "page_size")) & value == FALSE)
+  null_vals <- purrr::map_lgl(
+    arg_list,
+    purrr::is_null
+  ) %>%
+    dplyr::as_tibble(rownames = "arg") %>%
+    dplyr::filter(!(arg %in% c(
+      "key", id,
+      "attachments", "page_number",
+      "page_size"
+    )) & value == FALSE)
   if (nrow(null_vals) > 0) {
-    res <- paste0( "\n If ", id, " is provided, the only other argument",
-                  "\nthat is valid is the attachments argument.\n",
-                  "Check Arguments: ",
-                  paste0(null_vals["arg"], collapse = "\n"))
+    res <- paste0(
+      "\n If ", id, " is provided, the only other argument",
+      "\nthat is valid is the attachments argument.\n",
+      "Check Arguments: ",
+      paste0(null_vals["arg"], collapse = "\n")
+    )
     return(res)
-  }
-  else {
+  } else {
     return(NULL)
   }
 }
