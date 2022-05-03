@@ -23,8 +23,10 @@ Obtain Text from Download Links and Add to Data Frame
 }
 \examples{
 \dontrun{
-result <- get_all_documents(documentId = c("FDA-2012-S-1144-0322",
-"NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"))
+result <- get_all_documents(documentId = c(
+  "FDA-2012-S-1144-0322",
+  "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"
+))
 resul <- add_text(result)
 }
 }
