@@ -54,13 +54,14 @@ If you run `set_datagov_key`, you don't need to provide the key as an argument t
 
 ### Example: Retrieving Comments for a Specific Docket 
 
-For example, here we retrieve all comment metadata, including the download links, for the docket [CMS-2014-0063](https://www.regulations.gov/docket/CMS-2014-0063). First, we do so assuming we have set up the key.
+For example, here we retrieve all comment metadata, including the download links, for the docket [CMS-2014-0063](https://www.regulations.gov/docket/CMS-2014-0063). First, we do so assuming we have set up the key. See the **Obtaining Data** vignette for more information on how to use the `endpoint` argument. 
 
 
 ```{r, eval = FALSE}
 
 # retrieve all comments for the docket CMS-2014-0063
-comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063")
+comments_CMS_2014_0063 <- get_all_comments(endpoint = "document",
+                                           docketId = "CMS-2014-0063")
 
 ```
 
@@ -70,7 +71,9 @@ If the key is not set up, then we provide the key with the `key` argument. Here,
 
 
 # retrieve all comments for the docket CMS-2014-0063
-comments_CMS_2014_0063 <- get_all_comments(docketId = "CMS-2014-0063", key = "DEMO_KEY")
+comments_CMS_2014_0063 <- get_all_comments(endpoint = "document",
+                                           docketId = "CMS-2014-0063", 
+                                           key = "DEMO_KEY")
 
 
 ```
@@ -96,7 +99,8 @@ Here, we obtain document and metadata for all documents associated with the dock
 
 library(dplyr)
 
-documents <- regulationsgov::get_all_documents(docketId ="FDA-2009-N-0501")
+documents <- regulationsgov::get_all_documents(
+  docketId = "FDA-2009-N-0501")
 
 
 str(documents)
@@ -111,7 +115,8 @@ In this case, there are only 13 comments associated with docket `FDA-2009-N-0501
 
 ```{r}
 
-comments <- regulationsgov::get_all_comments(docketId ="FDA-2009-N-0501")
+comments <- regulationsgov::get_all_comments(endpoint = "document",
+                                             docketId ="FDA-2009-N-0501")
 
 comments %>%
   select(data_id, 
