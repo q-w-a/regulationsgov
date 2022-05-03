@@ -37,24 +37,27 @@ utils::globalVariables(c("term", "value", "filt"))
 #' are between 5 and 250. The default value is 250.
 #' @export
 #' @examples
-#' construct_comment_url(agencyId = c("CMS", "EPA"),
-#' postedDate = c("2020-02-02", "2020-10-02"),
-#' key = "DEMO_KEY")
-#' construct_comment_url(searchTerm = "case numbers",
-#' postedDate = c("2021-01-02", "2021-01-15"),
-#' key = "DEMO_KEY")
-construct_comment_url <- function(
-  key = NULL,
-  commentId = NULL,
-  attachments = NULL,
-  postedDate = NULL,
-  agencyId = NULL,
-  searchTerm = NULL,
-  commentOnId = NULL,
-  lastModifiedDate = NULL,
-  sort = NULL,
-  page_number = 1,
-  page_size = 250) {
+#' construct_comment_url(
+#'   agencyId = c("CMS", "EPA"),
+#'   postedDate = c("2020-02-02", "2020-10-02"),
+#'   key = "DEMO_KEY"
+#' )
+#' construct_comment_url(
+#'   searchTerm = "case numbers",
+#'   postedDate = c("2021-01-02", "2021-01-15"),
+#'   key = "DEMO_KEY"
+#' )
+construct_comment_url <- function(key = NULL,
+                                  commentId = NULL,
+                                  attachments = NULL,
+                                  postedDate = NULL,
+                                  agencyId = NULL,
+                                  searchTerm = NULL,
+                                  commentOnId = NULL,
+                                  lastModifiedDate = NULL,
+                                  sort = NULL,
+                                  page_number = 1,
+                                  page_size = 250) {
 
   # get arguments as a named list
   arguments <- as.list(environment())
@@ -73,20 +76,22 @@ construct_comment_url <- function(
     url <- paste0(base, "/", commentId, "?api_key=", key)
 
     if (!is.null(attachments)) {
-      url <- paste0(base, "/", commentId,
-                    "?include=attachments&api_key=", key)
+      url <- paste0(
+        base, "/", commentId,
+        "?include=attachments&api_key=", key
+      )
     }
-  }
-  else {
+  } else {
     url <- make_url(arguments, base, key)
   }
   return(url)
-
 }
 
 make_url <- function(arguments, base, key) {
-  arguments <- map(names(arguments),
-                   ~collapse_values(., arguments = arguments)) %>%
+  arguments <- map(
+    names(arguments),
+    ~ collapse_values(., arguments = arguments)
+  ) %>%
     unlist(recursive = FALSE)
 
   not_filt <- c("sort", "page_number", "page_size")
@@ -96,37 +101,50 @@ make_url <- function(arguments, base, key) {
     dplyr::filter(term != "key") %>%
     # order terms so sort term is last
     dplyr::mutate(term = factor(term,
-                                levels = c(.data$term[!term == "sort"],
-                                           "sort"))) %>%
+      levels = c(
+        .data$term[!term == "sort"],
+        "sort"
+      )
+    )) %>%
     dplyr::arrange(term) %>%
-    mutate(filt = ifelse(!(term %in% not_filt),
-                         paste0("filter[", term, "]=", value),
-                         paste0(term, "=", value)),
-           filt =  gsub( "page_size",
-                         "page[size]",
-                         filt,
-                         fixed = TRUE),
-           filt = gsub("page_number",
-                       "page[number]",
-                       filt,
-                       fixed = TRUE),
-           filt = gsub("[postedDate1]",
-                       "[postedDate][ge]",
-                       filt,
-                       fixed = TRUE),
-           filt = gsub("[postedDate2]",
-                       "[postedDate][le]",
-                       filt,
-                       fixed = TRUE),
-           filt = gsub("[lastModifiedDate1]",
-                       "[lastModifiedDate][ge]",
-                       filt,
-                       fixed = TRUE),
-           filt = gsub("[lastModifiedDate2]",
-                       "[lastModifiedDate][le]",
-                       filt,
-                       fixed = TRUE)) %>%
-    dplyr::pull(filt) %>% paste0(collapse="&")
+    mutate(
+      filt = ifelse(!(term %in% not_filt),
+        paste0("filter[", term, "]=", value),
+        paste0(term, "=", value)
+      ),
+      filt = gsub("page_size",
+        "page[size]",
+        filt,
+        fixed = TRUE
+      ),
+      filt = gsub("page_number",
+        "page[number]",
+        filt,
+        fixed = TRUE
+      ),
+      filt = gsub("[postedDate1]",
+        "[postedDate][ge]",
+        filt,
+        fixed = TRUE
+      ),
+      filt = gsub("[postedDate2]",
+        "[postedDate][le]",
+        filt,
+        fixed = TRUE
+      ),
+      filt = gsub("[lastModifiedDate1]",
+        "[lastModifiedDate][ge]",
+        filt,
+        fixed = TRUE
+      ),
+      filt = gsub("[lastModifiedDate2]",
+        "[lastModifiedDate][le]",
+        filt,
+        fixed = TRUE
+      )
+    ) %>%
+    dplyr::pull(filt) %>%
+    paste0(collapse = "&")
 
   url <- paste0(base, "?", filters, "&api_key=", key)
   return(url)
