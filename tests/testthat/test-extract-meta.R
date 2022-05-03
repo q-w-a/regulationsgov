@@ -9,4 +9,4 @@ test_that("extract_meta produces expected output", {
   # comments endpoint
   res <- extract_meta("https://api.regulations.gov/v4/documents/HHS-OCR-2018-0002-5313")
   expect_equal(nrow(res), 1)
-} )
+})
