@@ -7,13 +7,14 @@
 get_all_documents(endpoint = "document", ..., quiet = TRUE, key = NULL)
 }
 \arguments{
-\item{endpoint}{which endpoint you want the url to be based on. The
-options are "document", "comment", and "docket". Note that this will be
+\item{endpoint}{string that represents which endpoint you want the
+url to be based on. The options are "document" and "docket". Note that this will be
 the endpoint your parameters will be applied to (e.g. the posted date of
-the comment versus the posted date of the document).}
+the document versus the posted date of the docket). The default value
+is "document."}
 
 \item{...}{arguments passed to \code{\link[=construct_document_url]{construct_document_url()}} or
-\code{\link[=construct_docket_url]{construct_docket_url()}}.}
+\code{\link[=construct_docket_url]{construct_docket_url()}}, whichever function corresponds to the endpoint provided.}
 
 \item{quiet}{logical; FALSE if you want to see the progress of the function as it
 acquires detailed information for each comment.}
@@ -31,9 +32,11 @@ Get Document Metadata for Given Documents or Docket
 \examples{
 \dontrun{
 # get all document data for documents associated with docket FDA-2009-N-0501
-result <- get_all_documents(docketId ="FDA-2009-N-0501")
+result <- get_all_documents(docketId = "FDA-2009-N-0501")
 # get all document data for document IDs
-result <- get_all_documents(documentId = c("FDA-2012-S-1144-0322",
- "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"))
+result <- get_all_documents(documentId = c(
+  "FDA-2012-S-1144-0322",
+  "NHTSA-2008-0060-0827", "DOT-OST-2018-0206-0008", "CMS-2018-0104-0001"
+))
 }
 }
