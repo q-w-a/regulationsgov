@@ -50,29 +50,32 @@ utils::globalVariables(c("term", "value", "filt"))
 #' are between 5 and 250. The default value is 250.
 #' @export
 #' @examples
-#' url <- construct_document_url(agencyId = c("CMS", "EPA"),
-#' postedDate = c("2020-02-02", "2020-10-02"),
-#' key = "DEMO_KEY")
-#' url <- construct_document_url(documentId = "CMS-2014-0063-0001",
-#' attachments = "true",
-#' key = "DEMO_KEY")
-construct_document_url <- function(
-  key = NULL,
-  documentId = NULL,
-  attachments = NULL,
-  docketId = NULL,
-  agencyId = NULL,
-  commentEndDate = NULL,
-  documentType = NULL,
-  frDocNum = NULL,
-  searchTerm = NULL,
-  postedDate = NULL,
-  lastModifiedDate = NULL,
-  subtype = NULL,
-  withinCommentPeriod = NULL,
-  sort = NULL,
-  page_number = 1,
-  page_size = 250) {
+#' url <- construct_document_url(
+#'   agencyId = c("CMS", "EPA"),
+#'   postedDate = c("2020-02-02", "2020-10-02"),
+#'   key = "DEMO_KEY"
+#' )
+#' url <- construct_document_url(
+#'   documentId = "CMS-2014-0063-0001",
+#'   attachments = "true",
+#'   key = "DEMO_KEY"
+#' )
+construct_document_url <- function(key = NULL,
+                                   documentId = NULL,
+                                   attachments = NULL,
+                                   docketId = NULL,
+                                   agencyId = NULL,
+                                   commentEndDate = NULL,
+                                   documentType = NULL,
+                                   frDocNum = NULL,
+                                   searchTerm = NULL,
+                                   postedDate = NULL,
+                                   lastModifiedDate = NULL,
+                                   subtype = NULL,
+                                   withinCommentPeriod = NULL,
+                                   sort = NULL,
+                                   page_number = 1,
+                                   page_size = 250) {
 
   # get arguments as a named list
   arguments <- as.list(environment())
@@ -94,11 +97,12 @@ construct_document_url <- function(
     url <- paste0(base, "/", documentId, "?api_key=", key)
 
     if (!is.null(attachments)) {
-      url <- paste0(base, "/", documentId,
-                    "?include=attachments&api_key=", key)
+      url <- paste0(
+        base, "/", documentId,
+        "?include=attachments&api_key=", key
+      )
     }
-  }
-  else {
+  } else {
     # collapse all arguments
     url <- make_url(arguments, base, key)
   }
@@ -115,20 +119,25 @@ construct_document_url <- function(
 #' @param arguments named list containing arguments passed to the
 #'  \code{\link{construct_document_url}} function
 #' @keywords internal
- collapse_values <- function(x, arguments) {
-   # if argument is not a date, URLencode the arguments
-   # and paste together separated by commas
-   if (!is.null(arguments[[x]]) &
-       !(x %in% c("postedDate",
-                  "lastModifiedDate"))) {
-     args <- unlist(arguments[[x]])
-     args <- tryCatch({
-     args <- purrr::map_chr(args, ~as.character(.x) %>%
-                              URLencode(reserved = TRUE))
-       },
-        error = function(e) {
-          return(args)})
-     arguments[x] <- paste0(unlist(args), collapse = ',')
-   }
-    return(arguments[x])
- }
+collapse_values <- function(x, arguments) {
+  # if argument is not a date, URLencode the arguments
+  # and paste together separated by commas
+  if (!is.null(arguments[[x]]) &
+    !(x %in% c(
+      "postedDate",
+      "lastModifiedDate"
+    ))) {
+    args <- unlist(arguments[[x]])
+    args <- tryCatch(
+      {
+        args <- purrr::map_chr(args, ~ as.character(.x) %>%
+          URLencode(reserved = TRUE))
+      },
+      error = function(e) {
+        return(args)
+      }
+    )
+    arguments[x] <- paste0(unlist(args), collapse = ",")
+  }
+  return(arguments[x])
+}
