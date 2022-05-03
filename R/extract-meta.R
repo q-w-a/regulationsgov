@@ -30,43 +30,46 @@ extract_meta <- function(link, key = NULL) {
 
   comment_meta_df <- parsed %>%
     unlist(recursive = TRUE) %>%
-    t()  %>%
+    t() %>%
     as.data.frame()
 
   # fix duplicated names
   names(comment_meta_df) <- make.names(names(comment_meta_df),
-                                       unique=TRUE)
+    unique = TRUE
+  )
 
-  tryCatch({
-    comment_meta_df <- comment_meta_df %>%
-      mutate(dplyr::across(dplyr::everything(),
-                           ~paste0(unlist(.x),
-                                   collapse = ','))) %>%
-      mutate(fileUrl = paste0(
-        select(., contains("fileUrl")),
-        collapse = ",")) %>%
-      select(-dplyr::matches("fileUrl[[:digit:]]|fileUrl\\.[[:digit:]]|\\.fileUrl")) %>%
-      select(-which(dplyr::all_of(.) == "")) %>%
-      select(!dplyr::contains("display")) %>%
-       rename_with(~gsub("fileFormats\\.|attributes\\.|included\\.",
-                                "", .x)) %>%
-      rename_with(~gsub(".", "_", .x,
-                        fixed = TRUE))
-  },
-  error = function(e) {
-    message("error with", api_link)
-    return(parsed)
-  })
+  tryCatch(
+    {
+      comment_meta_df <- comment_meta_df %>%
+        mutate(dplyr::across(
+          dplyr::everything(),
+          ~ paste0(unlist(.x),
+            collapse = ","
+          )
+        )) %>%
+        mutate(fileUrl = paste0(
+          select(., contains("fileUrl")),
+          collapse = ","
+        )) %>%
+        select(-dplyr::matches("fileUrl[[:digit:]]|fileUrl\\.[[:digit:]]|\\.fileUrl")) %>%
+        select(-which(dplyr::all_of(.) == "")) %>%
+        select(!dplyr::contains("display")) %>%
+        rename_with(~ gsub(
+          "fileFormats\\.|attributes\\.|included\\.",
+          "", .x
+        )) %>%
+        rename_with(~ gsub(".", "_", .x,
+          fixed = TRUE
+        ))
+    },
+    error = function(e) {
+      message("error with", api_link)
+      return(parsed)
+    }
+  )
   # add ID
-  #comment_meta_df$cid <- parsed$data$id
+  # comment_meta_df$cid <- parsed$data$id
 
   # return data frame of metadata for a single comment ID
   return(comment_meta_df)
 }
-
-
-
-
-
-
-

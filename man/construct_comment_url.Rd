@@ -65,10 +65,14 @@ the regulations.gov search function and go to a \href{https://www.regulations.go
 or \href{https://www.regulations.gov/document/CMS-2014-0063-0001}{document} and look at the associated comments.
 }
 \examples{
-construct_comment_url(agencyId = c("CMS", "EPA"),
-postedDate = c("2020-02-02", "2020-10-02"),
-key = "DEMO_KEY")
-construct_comment_url(searchTerm = "case numbers",
-postedDate = c("2021-01-02", "2021-01-15"),
-key = "DEMO_KEY")
+construct_comment_url(
+  agencyId = c("CMS", "EPA"),
+  postedDate = c("2020-02-02", "2020-10-02"),
+  key = "DEMO_KEY"
+)
+construct_comment_url(
+  searchTerm = "case numbers",
+  postedDate = c("2021-01-02", "2021-01-15"),
+  key = "DEMO_KEY"
+)
 }

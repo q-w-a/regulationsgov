@@ -54,7 +54,9 @@ the regulations.gov search function and go to a \href{https://www.regulations.go
 or \href{https://www.regulations.gov/document/CMS-2014-0063-0001}{document} and look at the details section.
 }
 \examples{
-url <- construct_docket_url(agencyId = c("CMS", "EPA"),
-lastModifiedDate =  c("2020-01-02 12:00:00", "2020-02-02 12:00:00" ), key = "DEMO_KEY")
+url <- construct_docket_url(
+  agencyId = c("CMS", "EPA"),
+  lastModifiedDate = c("2020-01-02 12:00:00", "2020-02-02 12:00:00"), key = "DEMO_KEY"
+)
 url <- construct_docket_url(docketId = "CMS-2014-0063-0001", key = "DEMO_KEY")
 }
