@@ -21,18 +21,24 @@ a nested list. Based off of advice
 }
 \examples{
 {
-# create list of data frames for example
-df_nest <- list(Y = data.frame(x.test = c(1,2,3)),
-Z = data.frame(w = c("a","b","c")))
+  # create list of data frames for example
+  df_nest <- list(
+    Y = data.frame(x.test = c(1, 2, 3)),
+    Z = data.frame(w = c("a", "b", "c"))
+  )
 
-# extract element containing 'test'
-find_element(df_nest, "test")
+  # extract element containing 'test'
+  find_element(df_nest, "test")
 
-# create nested list for example
-list_nest <- list(Y = c(1,2,3),
-z = list(x.test = c(1,2,3),
-y = c("no", "yes")))
-find_element(list_nest, "test")
+  # create nested list for example
+  list_nest <- list(
+    Y = c(1, 2, 3),
+    z = list(
+      x.test = c(1, 2, 3),
+      y = c("no", "yes")
+    )
+  )
+  find_element(list_nest, "test")
 }
 }
 \keyword{internal}

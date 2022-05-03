@@ -27,7 +27,8 @@ all elements are on the first page. Otherwise, multiple API calls will
 be needed to obtain all the results.
 }
 \examples{
-\dontrun{iterate_over_pages("https://api.regulations.gov/v4/comments?filter
+\dontrun{
+iterate_over_pages("https://api.regulations.gov/v4/comments?filter
 [commentOnId]=09000064816e1a41&page[size]=250&page[number]=1&
 sort=lastModifiedDate,documentId&api_key=DEMO_KEY")
 }

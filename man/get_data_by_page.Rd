@@ -22,7 +22,8 @@ this is necessary to obtain all the data.
 \dontrun{
 get_data_by_page("https://api.regulations.gov/v4/documents?
 filter[docketId]=CMS-2014-0063&page[size]=250&page[number]=1&api_key=DEMO_KEY",
-page_number = 2)
+  page_number = 2
+)
 }
 }
 \keyword{internal}
